@@ -1,14 +1,10 @@
-build = workspace.Build
+local build = workspace.Build
 local droppers_list = require(script.Parent.DroppersList)
-DroppedParts = Instance.new('Folder')
-DroppedParts.Name = 'DroppedParts'
-DroppedParts.Parent = workspace
-TycoonBasePlate = workspace.Build.TycoonBaseplate
+local workspaceTeams = workspace:WaitForChild('Teams')
 
 
-
-
-local function dropper(dropper_id)
+local function dropper(dropper_id, baseplate, team)
+		local DroppedParts = workspaceTeams:WaitForChild(team.name):WaitForChild('DroppedParts')
 		local dropper = droppers_list[dropper_id]
 
 		local dropper_model = dropper.model:Clone()
@@ -25,10 +21,7 @@ local function dropper(dropper_id)
 		
 		local function spawn_part()
 			if dropper.spawned then
-				print('a')
 
-
-				local it = 0
 				if not dropper.state then
 					dropper.state = true
 				
@@ -38,20 +31,25 @@ local function dropper(dropper_id)
 						local new_part = dropper.partModel:Clone()
 						
 						local newPartChildren = new_part:GetChildren()
-						if #newPartChildren > 2 then
-							for i, part in pairs(newPartChildren) do
+						
+						for i, part in pairs(newPartChildren) do
+							part:SetAttribute('Team', team.name)
+							part:SetAttribute('CoinsValue', dropper.partValue)
+							part:SetAttribute('IsADroppedPart', true)
+							
+							if #newPartChildren > 2 then
+								
 								if part:IsA('MeshPart') and part ~= new_part.PrimaryPart then
 									local weld = Instance.new('WeldConstraint')
 									weld.Part0 = new_part.PrimaryPart
 									weld.Part1 = part
 									weld.Parent = new_part.PrimaryPart
 								end
-
 							end
-
-							
 						end
-			
+						
+						new_part:SetAttribute('Team', team.name)
+						new_part:SetAttribute('CoinsValue', dropper.partValue)
 						new_part.Parent = DroppedParts
 						new_part:PivotTo(extruder.CFrame * dropper.partSpawnPos)
 						
@@ -61,36 +59,31 @@ local function dropper(dropper_id)
 		end
 		
 		
-		
 		if not dropper.spawned then
 			
-			dropper_model.Parent = TycoonBasePlate
+			dropper_model:SetAttribute('Team', team.name)
+			dropper_model.Parent = baseplate.Parent
 			
-			local baseplatePart = TycoonBasePlate.BaseplateBuild
+			local baseplatePart = baseplate.BaseplateBuild
 			
-			
-			local offsetY = baseplatePart.Size.Y / 2 + dropper_model:GetExtentsSize().Y / 2
-			dropper_model:PivotTo(baseplatePart.CFrame * dropper.position)
-			
-			dropper.spawned = true
+			local offsetY = baseplatePart:GetPivot().Y + (baseplatePart.Size.Y / 2) + (dropper_model.PrimaryPart.Size.Y / 2)
+			dropper_model:PivotTo(CFrame.new(baseplatePart.CFrame.X,offsetY,baseplatePart.CFrame.Z) * dropper.position)
+				
+				
+				dropper.spawned = true
 			spawn_part()
 		else
 			spawn_part()	
-		end
-		
-		
-	
+		end	
 end
 
 
-local eventPlatePressed = game.ServerScriptService.Events.PlatesPressedEvent
+local eventPlatePressed = game.ServerScriptService.Events.Spawn.DroppersSpawn
 eventPlatePressed.Event:Connect(function(message)
-	print('b')
 	if message.plateType == 'Default' then
 		if message.targetId then
-			
-			print('c')
-			dropper(message.targetId)
+
+			dropper(message.targetId, message.baseplate, message.team)
 			task.wait(3)
 		end
 	end
