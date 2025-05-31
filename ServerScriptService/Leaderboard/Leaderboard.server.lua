@@ -1,4 +1,6 @@
 local Players = game:GetService("Players")
+local ServerScriptService = game:GetService('ServerScriptService')
+local teamsList = require(ServerScriptService.Teams.TeamsList)
 
 
 local function leaderboardSetup(player)
@@ -8,7 +10,7 @@ local function leaderboardSetup(player)
 	
 	local coins = Instance.new('IntValue')
 	coins.Name = 'Coins'
-	coins.Value = 0
+	coins.Value = 1000000
 	coins.Parent = leaderstats
 	
 	local Team = Instance.new('StringValue')
