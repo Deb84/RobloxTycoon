@@ -27,7 +27,7 @@ end
 
 local BPL = BuildPartListing()
 
-local function partSpawn()
+local function partSpawn(partId, baseplate, team)
 	if not BPL then
 		task.wait(1)
 		if not BPL then
@@ -35,6 +35,43 @@ local function partSpawn()
 		end
 	end
 	
+	local partConfig = BuildPartList.PartList[partId]
+	
+	if not partConfig.spawned then
+		partConfig.spawned = true
+	
+		local partModel = partConfig.model:Clone()
+		
+		partModel:SetAttribute('Team', team.name)
+		partModel:SetAttribute('Build', partConfig.parentBuilding)
+		partModel.Name = partConfig.name
+		
+		local collide = true
+		if not partConfig.Collision then
+			collide = false
+		end
+		
+		if partModel:IsA('Model') then
+			for _, child in ipairs(partModel:GetChildren()) do
+				child:SetAttribute('Team', team.name)
+				child.Anchored = true
+				child.CanCollide = collide
+			end
+		end
+		
+		
+		local baseplatePart = baseplate.BaseplateBuild
+		
+		local offsetY = baseplatePart:GetPivot().Y + (baseplatePart.Size.Y / 2) + (partModel:GetExtentsSize().Y / 2)
+		partModel:PivotTo(CFrame.new(baseplatePart.CFrame.X,offsetY,baseplatePart.CFrame.Z) * partConfig.position)
+		
+		if partConfig.Parent then
+			partModel.Parent = partConfig.parent
+		else
+			partModel.Parent = baseplatePart.Parent.Parent
+		end
+		
+	end
 	
 	
 	
@@ -50,10 +87,7 @@ eventPlatePressed.Event:Connect(function(message)
 	print('b')
 	if message.plateType == 'Default' then
 		if message.targetId then
-
-			print('c')
-			partSpawn(message.targetId)
-			task.wait(3)
+			partSpawn(message.targetId, message.baseplate, message.team)
 		end
 	end
 end)
