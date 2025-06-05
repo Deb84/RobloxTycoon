@@ -11,11 +11,11 @@ BuildPartsList.Build1 = {
 	[1] = {
 		model = Tycoon.BuildParts.Part1,
 		name = 'name',
-		partTyper = 'type',
+		partType = 'type',
 		parent = 'parent',
 		parentBuilding = 'parent building',
 		spawned = false,
-		position = CFrame.new(0,0,0) * CFrame.fromOrientation(math.rad(0), math.rad(0), math.rad(0)),
+		position = CFrame.new(-20,0,0) * CFrame.fromOrientation(math.rad(0), math.rad(0), math.rad(0)),
 		collisions = true
 	}
 }
