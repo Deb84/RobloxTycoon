@@ -4,6 +4,7 @@ local Tycoon = ServerScriptService:WaitForChild('Tycoon')
 local beltUtils = require(ServerScriptService.Tycoon.Conveyors.Belt)
 local conveyorsList = require(Tycoon.Conveyors.ConveyorsList)
 local CoinsUtils = require(ServerScriptService.Leaderboard.CoinsUtils)
+local PlacementUtils = require(ServerScriptService.Utils.PlacementUtils)
 
 local destroyer = {}
 
@@ -53,7 +54,6 @@ function destroyer.Destroyer(destroyerId, baseplate, team)
 	
 		destroyerModel.Name = destroyerConfig.name
 		
-		local baseplatePart = baseplate.BaseplateBuild
 		
 		if destroyerModel:IsA('Model') then
 			for _, part in pairs(destroyerModel:GetChildren()) do
@@ -66,9 +66,10 @@ function destroyer.Destroyer(destroyerId, baseplate, team)
 			end
 		end
 		
+		local baseplatePart = baseplate.BaseplateBuild
 		
-		local offsetY = baseplatePart:GetPivot().Y + (baseplatePart.Size.Y / 2) + (destroyerModel:GetExtentsSize().Y / 2)
-		destroyerModel:PivotTo(CFrame.new(baseplatePart.CFrame.X,offsetY,baseplatePart.CFrame.Z) * destroyerConfig.position)
+		local offsetY = PlacementUtils.offsetY(baseplate, destroyerModel)
+		destroyerModel:PivotTo(offsetY * destroyerConfig.position)
 		
 		destroyerModel.Parent = baseplatePart.Parent.Parent
 		
