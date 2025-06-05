@@ -2,28 +2,43 @@ local ServerScriptService = game:GetService('ServerScriptService')
 local moduleRouter = {}
 
 local modules = {
+	-- Lists
+	PlateList = require(ServerScriptService.Tycoon.BuyingPlates.PlatesList),
+	startPlatesList = require(ServerScriptService.Tycoon.Start.StartPlatesList),
 	teamsList = require(ServerScriptService.Teams.TeamsList),
-	startPlatesList = require(ServerScriptService.Tycoon.Start.StartPlatesList)
+	-- Utils
+	CoinsUtils = require(ServerScriptService.Leaderboard.CoinsUtils),
+	PathUtils = require(ServerScriptService.Utils.PathUtils),
+	PlacementUtils = require(ServerScriptService.Utils.PlacementUtils),
+	
 }
 
 -- For the recursive imports
-function moduleRouter.modulesInit()
-	local Droppers = ServerScriptService.Tycoon.Droppers.Droppers
-	moduleRouter.Register(Droppers.Name, require(Droppers))
-	
-	local Plates = ServerScriptService.Tycoon.BuyingPlates.Plates
-	moduleRouter.Register(Plates.Name, require(Plates))
-	
-	local PlateOrder = ServerScriptService.Tycoon.BuyingPlates.PlatesOrder
-	moduleRouter.Register(PlateOrder.Name, require(PlateOrder))
-	
-	local Conveyors = ServerScriptService.Tycoon.Conveyors.Conveyors
-	moduleRouter.Register(Conveyors.Name, require(Conveyors))
-	
-	local BuildParts = ServerScriptService.Tycoon.BuildParts.BuildParts
-	moduleRouter.Register(BuildParts.Name, require(BuildParts))
-	
-	print(modules)
+function moduleRouter.modulesInit(moduleName)
+	-- Parts
+	local modulesList = {
+		-- Parts
+		Droppers = ServerScriptService.Tycoon.Droppers.Droppers,
+		Plates = ServerScriptService.Tycoon.BuyingPlates.Plates,
+		Conveyors = ServerScriptService.Tycoon.Conveyors.Conveyors,
+		BuildParts = ServerScriptService.Tycoon.BuildParts.BuildParts,
+		-- Manager
+		PlateOrder = ServerScriptService.Tycoon.BuyingPlates.PlatesOrder,
+		TeamsHandler = ServerScriptService.Teams.TeamsHandler
+	}
+	if not moduleName then
+		for _, module in pairs(modulesList) do
+			if not modules[module] then
+				moduleRouter.Register(module.Name, require(module))
+			end
+		end
+		
+	elseif modulesList[moduleName] then
+		if not modules[moduleName] then
+			moduleRouter.Register(modulesList[moduleName].Name, require(modulesList[moduleName]))
+		end
+	end
+
 end
 
 
@@ -42,6 +57,7 @@ function moduleRouter.execute(message)
 	-- async = bool (optional, default false)
 	-- argsReq = bool (optional, default false) 
 	-- response = bool (optional, default false)
+	-- pcall = bool (optional, default false) TODO
 	--}
 	
 	local function check()
@@ -111,7 +127,7 @@ function moduleRouter.getModule(moduleName)
 	if modules[moduleName] then
 		return modules[moduleName]
 	else
-		warn('Unable to get '..moduleName..' to the list')
+		warn('Unable to get '..moduleName..' in the list')
 		return
 	end
 end
