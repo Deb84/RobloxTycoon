@@ -1,10 +1,15 @@
 local ServerScriptService = game:GetService('ServerScriptService')
-local ServerStorage = game:GetService('ServerStorage')
-local Players = game:GetService('Players')
-local startPlatesList = require(ServerScriptService.Tycoon.Start.StartPlatesList)
-local teamsList = require(ServerScriptService.Teams.TeamsList)
-local startPlateTouchedEvent = ServerScriptService.Events.StartPlateTouched
+local Services = require(ServerScriptService.Utils.Services)
+local moduleRouter = require(ServerScriptService.Utils.ModuleRouter)
+local ServerStorage, Players = Services:getServices('ServerStorage', 'Players')
+local startPlatesList, teamsList = moduleRouter:getModules('startPlatesList', 'teamsList')
+local teamsHandler = require(ServerScriptService.Teams.TeamsHandler)
 
+local function GameScriptInit()
+	local GameFolder = Instance.new('Folder')
+	GameFolder.Name = 'Game'
+	GameFolder.Parent = ServerScriptService
+end
 
 local function teamLeaderboard(player, team)
 	local leaderstats = player:WaitForChild('leaderstats')
@@ -12,33 +17,11 @@ local function teamLeaderboard(player, team)
 	leaderboardTeam.Value = team.displayedName
 end
 
-
-if not workspace:FindFirstChild('Teams') then
-	local teamsFolder = Instance.new('Folder')
-	teamsFolder.Name = 'Teams'
-	teamsFolder.Parent = workspace
-end
-
-local function folderInit(team)
-	if not workspace:WaitForChild('Teams'):FindFirstChild(team.name) then
-		local teamFolder = Instance.new('Folder')
-		teamFolder.Name = team.name
-		teamFolder.Parent = workspace:WaitForChild('Teams')
-	end
-	
-	if not workspace:WaitForChild('Teams'):WaitForChild(team.name):FindFirstChild('DroppedParts') then
-		local droppedPartsFolder = Instance.new('Folder')
-		
-		droppedPartsFolder:SetAttribute('Team', team.name)
-		droppedPartsFolder.Name = 'DroppedParts'
-		droppedPartsFolder.Parent = workspace:WaitForChild('Teams'):WaitForChild(team.name)
-	end
-	
-end
-
 for _, team in pairs(teamsList) do
 	
-	folderInit(team)
+	if not teamsHandler.teamsInit(team) then 
+		error('A problem has occured during the team initialization [Team:'..team.name..']')
+	end
 	
 	local baseplate = team.baseplateModel:Clone()
 	
@@ -87,14 +70,15 @@ for _, team in pairs(teamsList) do
 						
 						startPlate.Transparency = teamStartPlate.newTransparency
 						
-						team['player'] = player
+						teamsHandler.AddPlayer(player, team)
+						print(teamsList)
 						
-						local message = {
-							team = team,
-							teamBaseplate = baseplate -- cloned model
-						}
+						local plates = require(ServerScriptService.Tycoon.BuyingPlates.Plates)
 						
-						startPlateTouchedEvent:Fire(message)
+						moduleRouter.modulesInit()
+						
+						plates.spawnPlate(1, baseplate, team)
+						
 				
 					end
 					
@@ -103,5 +87,6 @@ for _, team in pairs(teamsList) do
 		end
 	end
 end
+
 
 
