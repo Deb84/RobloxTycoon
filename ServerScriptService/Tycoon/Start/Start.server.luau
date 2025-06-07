@@ -2,14 +2,35 @@ local ServerScriptService = game:GetService('ServerScriptService')
 local Services = require(ServerScriptService.Utils.Services)
 local moduleRouter = require(ServerScriptService.Utils.ModuleRouter)
 local ServerStorage, Players = Services:getServices('ServerStorage', 'Players')
-local startPlatesList, teamsList = moduleRouter:getModules('startPlatesList', 'teamsList')
+local startPlatesList, teamsList, PathUtils = moduleRouter.getModulesAndInit(script.name, 'StartPlatesList', 'TeamsList', 'PathUtils')
 local teamsHandler = require(ServerScriptService.Teams.TeamsHandler)
 
-local function GameScriptInit()
-	local GameFolder = Instance.new('Folder')
-	GameFolder.Name = 'Game'
-	GameFolder.Parent = ServerScriptService
+
+local function GameScriptFolderInit()
+	local gameFolder = Instance.new('Folder')
+	gameFolder.Name = 'Game'
+	gameFolder.Parent = ServerScriptService
+	PathUtils.addPath('GameSSSFolder', gameFolder)
+	
+	local teamsFolder = Instance.new('Folder')
+	teamsFolder.Name = 'Teams'
+	teamsFolder.Parent = ServerScriptService.Game
+	PathUtils.addPath('TeamsSSSFolder', teamsFolder)
 end
+
+local function TeamsWorkspaceFolder()
+	if not workspace:FindFirstChild('Teams') then
+		local teamsFolder = Instance.new('Folder')
+		teamsFolder.Name = 'Teams'
+		teamsFolder.Parent = workspace
+	end
+end
+
+GameScriptFolderInit()
+TeamsWorkspaceFolder()
+
+moduleRouter.modulesInit('Plates')
+local plates = moduleRouter.getModule(script.Name, 'Plates')
 
 local function teamLeaderboard(player, team)
 	local leaderstats = player:WaitForChild('leaderstats')
@@ -17,10 +38,10 @@ local function teamLeaderboard(player, team)
 	leaderboardTeam.Value = team.displayedName
 end
 
+
 for _, team in pairs(teamsList) do
-	
 	if not teamsHandler.teamsInit(team) then 
-		error('A problem has occured during the team initialization [Team:'..team.name..']')
+		error('An error has occured during the team initialization [Team:'..team.name..']')
 	end
 	
 	local baseplate = team.baseplateModel:Clone()
@@ -66,16 +87,13 @@ for _, team in pairs(teamsList) do
 					
 					if player then
 						
+						
 						teamLeaderboard(player, team)
 						
 						startPlate.Transparency = teamStartPlate.newTransparency
 						
 						teamsHandler.AddPlayer(player, team)
-						print(teamsList)
 						
-						local plates = require(ServerScriptService.Tycoon.BuyingPlates.Plates)
-						
-						moduleRouter.modulesInit()
 						
 						plates.spawnPlate(1, baseplate, team)
 						
