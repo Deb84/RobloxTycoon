@@ -4,7 +4,7 @@ local character = player.Character or player.CharacterAdded:Wait()
 local humanoid = character:WaitForChild("Humanoid")
 
 local defaultSpeed = 16
-local sprintSpeed = 25
+local sprintSpeed = 50
 
 
 local function sprint(actionName, inputState)
