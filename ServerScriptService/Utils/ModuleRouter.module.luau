@@ -1,44 +1,104 @@
-local ServerScriptService = game:GetService('ServerScriptService')
+local ModulesLists = require(script:FindFirstChild('ModulesList'))
+local ModuleRegistery = require(script:FindFirstChild('ModuleRegistery'))
+local ModuleExecuter = require(script:FindFirstChild('ModuleExecuter'))
+local ModuleLoader = require(script:FindFirstChild('ModuleLoader'))
 local moduleRouter = {}
 
-local modules = {
-	-- Lists
-	PlateList = require(ServerScriptService.Tycoon.BuyingPlates.PlatesList),
-	startPlatesList = require(ServerScriptService.Tycoon.Start.StartPlatesList),
-	teamsList = require(ServerScriptService.Teams.TeamsList),
-	-- Utils
-	CoinsUtils = require(ServerScriptService.Leaderboard.CoinsUtils),
-	PathUtils = require(ServerScriptService.Utils.PathUtils),
-	PlacementUtils = require(ServerScriptService.Utils.PlacementUtils),
-	
-}
+
+local modules = {}
+
 
 -- For the recursive imports
-function moduleRouter.modulesInit(moduleName)
-	-- Parts
-	local modulesList = {
-		-- Parts
-		Droppers = ServerScriptService.Tycoon.Droppers.Droppers,
-		Plates = ServerScriptService.Tycoon.BuyingPlates.Plates,
-		Conveyors = ServerScriptService.Tycoon.Conveyors.Conveyors,
-		BuildParts = ServerScriptService.Tycoon.BuildParts.BuildParts,
-		-- Manager
-		PlateOrder = ServerScriptService.Tycoon.BuyingPlates.PlatesOrder,
-		TeamsHandler = ServerScriptService.Teams.TeamsHandler
-	}
-	if not moduleName then
+function moduleRouter.modulesInit(caller, moduleName, ...)
+	
+	local function moduleListRegister(modulesList)
 		for _, module in pairs(modulesList) do
 			if not modules[module] then
-				moduleRouter.Register(module.Name, require(module))
+				moduleRouter.Register(module.name, require(module))
 			end
 		end
-		
-	elseif modulesList[moduleName] then
-		if not modules[moduleName] then
-			moduleRouter.Register(modulesList[moduleName].Name, require(modulesList[moduleName]))
-		end
+		return true	
 	end
-
+	
+	local function moduleRegister(moduleName)
+		local map = ModulesLists.map
+		local moduleList = map[moduleName]
+		local module = moduleList[moduleName]
+		moduleRouter.Register(module.name, require(module))
+		return true
+	end
+	
+	local function initEveryModules(modulesTypesList)
+		local moduleInitSatusTable = {}
+		for k, moduleList in pairs(modulesTypesList) do
+			local response = moduleListRegister(moduleList)
+			moduleInitSatusTable[k] = response
+		end
+		return moduleInitSatusTable
+	end
+	
+	local function checkResponse(responses)
+		if responses then
+			if type(responses) == 'table' then
+				for _, response in ipairs(responses) do
+					return true
+				end
+				return
+			else
+				if responses then
+					return true
+				else return end
+			end
+		else return end
+	end
+	
+	local modulesTypesList = {
+		lists = ModulesLists.modulesLists,
+		teamsLists = ModulesLists.teamsLists,
+		managers = ModulesLists.modulesManagers,
+		utils = ModulesLists.modulesUtils,
+		parts = ModulesLists.modulesParts,
+	}
+	
+	
+	local modulesResponse
+	
+	-- handle module init per type
+	if moduleName and type(moduleName) == 'table' and moduleName['type'] then
+		
+		if moduleName['type'] == 'lists' then
+			-- TODO
+		else
+			warn('Unable to initialize the module type "'..moduleName..'" [module:'..script.Name..'/function:modulesInit/caller:'..caller..']')
+		end
+		
+	-- handle init of all modules
+	elseif not moduleName then
+		
+		modulesResponse = initEveryModules(modulesTypesList)
+	
+	-- handle single and multiple init
+	elseif moduleName and type(moduleName) == 'string' then
+		if ... then
+			local moduleNamesPack = table.pack(...)
+			for _, modulesName in ipairs(moduleNamesPack) do
+				local response = moduleRegister(modulesName)
+				if not response then return end
+			end
+		end
+		modulesResponse = moduleRegister(moduleName)
+	end
+	
+	print(modules)
+	
+	if checkResponse(modulesResponse) then
+		return true
+	else
+		if type(moduleName) == 'string' then
+			warn('Unable to initialize the module "'..moduleName..'" [module:'..script.Name..'/function:modulesInit/caller:'..caller..']')
+		end
+		return
+	end
 end
 
 
@@ -123,27 +183,37 @@ function moduleRouter.removeModule(moduleName)
 	modules[moduleName] = nil
 end
 
-function moduleRouter.getModule(moduleName)
+function moduleRouter.getModule(caller, moduleName)
 	if modules[moduleName] then
 		return modules[moduleName]
 	else
+		warn(caller)
 		warn('Unable to get '..moduleName..' in the list')
 		return
 	end
 end
 
-function moduleRouter.getModules(...)
-	local moduleName = {...}
+function moduleRouter.getModules(caller, ...)
+	local moduleNames = {...}
 	local moduleList = {}
 
-	for _, list in pairs(moduleName) do
-		if modules[list] then
-			table.insert(moduleList, modules[list])
+	for _, moduleName in pairs(moduleNames) do
+		if modules[moduleName] then
+			table.insert(moduleList, modules[moduleName])
+		else
+			warn('Unable to find the module "'..moduleName..'" [modules:'..script.Name..'/function:getModules/caller:'..caller..']')
 		end
 	end
 
 	if moduleList then
 		return table.unpack(moduleList)
+	end
+end
+
+function moduleRouter.getModulesAndInit(caller, ...)
+	caller = caller..' in '..script.name..' via function:getModulesAndInit'
+	if moduleRouter.modulesInit(caller, ...) then
+		return moduleRouter.getModules(caller, ...)
 	end
 end
 
