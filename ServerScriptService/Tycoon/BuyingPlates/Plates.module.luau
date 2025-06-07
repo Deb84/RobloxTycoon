@@ -1,12 +1,9 @@
 local ServerScriptService = game:GetService('ServerScriptService')
 local Players = game:GetService("Players")
-local workspaceTeams = workspace:WaitForChild('Teams')
 local plates = {}
 
-local plateList = require(ServerScriptService.Tycoon.BuyingPlates.PlatesList)
-local ModuleRouter = require(ServerScriptService.Utils.ModuleRouter)
-local CoinsUtils = require(ServerScriptService.Leaderboard.CoinsUtils)
-local PlacementUtils = require(ServerScriptService.Utils.PlacementUtils)
+local Router = require(ServerScriptService.Utils.ModuleRouter)
+local platesList, CoinsUtils, PlacementUtils = Router.getModulesAndInit(script.name, 'PlatesList', 'CoinsUtils', 'PlacementUtils')
 
 
 local function targetSelect(plateConfig, plateId, baseplate, team)
@@ -16,15 +13,15 @@ local function targetSelect(plateConfig, plateId, baseplate, team)
 		plateId = plateId,
 		baseplate = baseplate,
 		team = team
-	}
+	}	
 
 	local scriptName = script.Name
 	if plateConfig.targetType == 'Dropper' then
-		ModuleRouter.execute({targetModule = 'Droppers', targetFunction = 'dropperSpawn', args = {plateConfig.targetId, baseplate, team}, async = true, argsReq = true, caller = scriptName})
+		Router.execute({targetModule = 'Droppers', targetFunction = 'dropperSpawn', args = {plateConfig.targetId, baseplate, team}, async = true, argsReq = true, caller = scriptName})
 	elseif plateConfig.targetType == 'Part' then
-		ModuleRouter.execute({targetModule = 'BuildParts', targetFunction = 'partSpawn', args = {plateConfig.targetId, baseplate, team}, async = true, argsReq = true, caller = scriptName})
+		Router.execute({targetModule = 'BuildParts', targetFunction = 'partSpawn', args = {plateConfig.targetId, baseplate, team}, async = true, argsReq = true, caller = scriptName})
 	elseif plateConfig.targetType == 'Conveyor' then
-		ModuleRouter.execute({targetModule = 'Conveyors', targetFunction = 'spawnConveyor', args = {plateConfig.targetId, baseplate, team}, async = true, argsReq = true, caller = scriptName})
+		Router.execute({targetModule = 'Conveyors', targetFunction = 'spawnConveyor', args = {plateConfig.targetId, baseplate, team}, async = true, argsReq = true, caller = scriptName})
 	end
 
 end
@@ -104,7 +101,7 @@ function plates.spawnPlate(plateId, baseplate, team)
 					print('Pas assez ! '.. plateConfig.targetPrice - balance)
 					return
 				end	
-			end	
+			end
 		end
 
 
@@ -119,7 +116,7 @@ function plates.spawnPlate(plateId, baseplate, team)
 				plateConfig.destroyed = true
 				plateModel:Destroy()
 
-				ModuleRouter.execute({
+				Router.execute({
 					targetModule = 'PlatesOrder', 
 					targetFunction = 'nextPlate', 
 					args = {plateId, baseplate, team}, 
@@ -132,7 +129,7 @@ function plates.spawnPlate(plateId, baseplate, team)
 	
 	
 	local player = team.players
-	local plateConfig = plateList[plateId]
+	local plateConfig = platesList[plateId]
 	local plateModel
 	
 	if not plateConfig.spawned and not plateConfig.destroyed then
