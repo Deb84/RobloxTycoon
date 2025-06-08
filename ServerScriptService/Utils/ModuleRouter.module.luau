@@ -1,5 +1,5 @@
-local Registery = require(script:FindFirstChild('ModuleRegistery'))
-local Executer = require(script:FindFirstChild('ModuleExecuter'))
+local Registry = require(script:FindFirstChild('ModuleRegistry'))
+local Executor = require(script:FindFirstChild('ModuleExecutor'))
 local Initializer = require(script:FindFirstChild('ModuleInitializer'))
 local ErrorHandler = require(script.Parent:FindFirstChild('ErrorHandler'))
 local moduleRouter = {}
@@ -11,50 +11,66 @@ function moduleRouter.modulesInit(caller, moduleNames)
 	local success, result = xpcall(function()
 		return Initializer.modulesInit(caller, moduleNames)
 	end, ErrorHandler.warnHandler)
+	if success then
+		return result
+	end
 end
 
 
 -- Allow to execute a module from this module
 function moduleRouter.execute(caller, message)
 	local success, result = xpcall(function()
-		return Executer.execute(caller, message)
+		return Executor.execute(caller, message)
 	end, ErrorHandler.warnHandler)
+	if success then
+		print('sucess: '..message.module)
+		return result
+	end
 end
 
 
 -- Classic module utils
 function moduleRouter.addModule(caller, moduleName, module)
 	local success, result = xpcall(function()
-		Registery.addModule(caller, moduleName, module)
+		Registry.addModule(caller, moduleName, module)
 	end, ErrorHandler.warnHandler)
 end
 
 function moduleRouter.removeModule(caller, moduleName)
 	local success, result = xpcall(function()
-		Registery.removeModule(caller, moduleName)
+		Registry.removeModule(caller, moduleName)
 	end, ErrorHandler.warnHandler)
 end
 
 function moduleRouter.getModule(caller, moduleName)
 	local success, result = xpcall(function()
-		return Registery.getModule(caller, moduleName)
+		return Registry.getModule(caller, moduleName)
 	end, ErrorHandler.warnHandler)
+	if success then
+		return result
+	end
 end
 
 function moduleRouter.getModules(caller, modulesNames)
 	local success, result = xpcall(function()
-		return Registery.getModules(caller, modulesNames)
+		return Registry.getModules(caller, modulesNames)
 	end, ErrorHandler.warnHandler)
+	if success then
+		return table.unpack(result)
+	end
 end
 
 function moduleRouter.getModulesAndInit(caller, moduleNames)
-	caller = string.format('%s in %s via function:getModulesAndInit', caller, script.Name)
+	caller = {script.Name, caller}
 	
 	local success, result = xpcall(function()
 		if moduleRouter.modulesInit(caller, moduleNames) then
-			return Registery.getModules(caller, moduleNames)
+			return Registry.getModules(caller, moduleNames)
 		end
 	end, ErrorHandler.warnHandler)
+	if success then
+		return table.unpack(result)
+	end
 end
 
 
