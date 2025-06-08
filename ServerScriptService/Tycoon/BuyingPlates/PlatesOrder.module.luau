@@ -12,7 +12,7 @@ function platesOrder.nextPlate(PlatePressedId, baseplate, team)
 		if PlatePressedNext.nextPlates then
 			for i, plateId in ipairs(PlatePressedNext.nextPlates) do
 				
-				ModuleRouter.execute({targetModule = 'Plates', targetFunction = 'spawnPlate', args = {plateId, baseplate, team}})
+				ModuleRouter.execute(script.Name, {module = 'Plates', func = 'spawnPlate', args = {plateId, baseplate, team}, argsReq = true})
 				
 			end
 		end
