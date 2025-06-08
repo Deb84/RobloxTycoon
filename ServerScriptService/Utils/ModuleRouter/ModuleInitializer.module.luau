@@ -1,5 +1,5 @@
-local ModuleRegistery = require(script.Parent:FindFirstChild('ModuleRegistery'))
-local ModuleMap = require(script.Parent:FindFirstChild('ModulesList'))
+local ModuleRegistry = require(script.Parent:FindFirstChild('ModuleRegistry'))
+local ModuleMap = require(script.Parent:FindFirstChild('ModuleList'))
 
 local ModuleInitializer = {}
 
@@ -7,8 +7,8 @@ local ModuleInitializer = {}
 function ModuleInitializer.modulesInit(caller, moduleNames)
 	local function moduleListRegister(modulesList)
 		for _, module in pairs(modulesList) do
-			if not ModuleRegistery.isRegistered(script.name, module) then
-				ModuleRegistery.Register(module.name, require(module))
+			if not ModuleRegistry.isRegistered(script.name, module) then
+				ModuleRegistry.Register(module.name, require(module))
 			end
 		end
 		return true	
@@ -18,7 +18,7 @@ function ModuleInitializer.modulesInit(caller, moduleNames)
 		local map = ModuleMap.map
 		local moduleList = map[moduleName]
 		local module = moduleList[moduleName]
-		ModuleRegistery.Register(script.Name, module.name, require(module))
+		ModuleRegistry.Register(script.Name, module.name, require(module))
 		return true
 	end
 
