@@ -1,14 +1,14 @@
 ServerScriptService = game:GetService('ServerScriptService')
 local ModulesList = {}
 
--- Globals Lists
+-- Globals lists
 ModulesList.modulesLists = {
 	TeamsList = ServerScriptService.Teams.TeamsList,
 	
-	ModulesList = script
+	ModuleList = script
 }
 
--- Teams Lists
+-- Teams Lists, relative to a team
 ModulesList.teamsLists = {
 	ConveyorsList = ServerScriptService.Tycoon.Conveyors.ConveyorsList,
 	DroppersList = ServerScriptService.Tycoon.Droppers.DroppersList,
@@ -45,7 +45,7 @@ ModulesList.map = {
 	DroppersList = ModulesList.teamsLists,
 	
 	TeamsList = ModulesList.modulesLists,
-	ModulesList = ModulesList.modulesLists,
+	ModuleList = ModulesList.modulesLists,
 	
 	PlatesOrder = ModulesList.modulesManagers,
 	TeamsHandler = ModulesList.modulesManagers,
