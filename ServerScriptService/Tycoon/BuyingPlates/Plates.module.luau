@@ -3,7 +3,8 @@ local Players = game:GetService("Players")
 local plates = {}
 
 local Router = require(ServerScriptService.Utils.ModuleRouter)
-local platesList, CoinsUtils, PlacementUtils = Router.getModulesAndInit(script.name, 'PlatesList', 'CoinsUtils', 'PlacementUtils')
+Router.modulesInit(script.Name, 'PlatesOrder')
+local platesList, CoinsUtils, PlacementUtils = Router.getModulesAndInit(script.name, {'PlatesList', 'CoinsUtils', 'PlacementUtils'})
 
 
 local function targetSelect(plateConfig, plateId, baseplate, team)
@@ -17,11 +18,11 @@ local function targetSelect(plateConfig, plateId, baseplate, team)
 
 	local scriptName = script.Name
 	if plateConfig.targetType == 'Dropper' then
-		Router.execute({targetModule = 'Droppers', targetFunction = 'dropperSpawn', args = {plateConfig.targetId, baseplate, team}, async = true, argsReq = true, caller = scriptName})
+		Router.execute(script.Name, {module = 'Droppers', func = 'dropperSpawn', args = {plateConfig.targetId, baseplate, team}, async = true, argsReq = true})
 	elseif plateConfig.targetType == 'Part' then
-		Router.execute({targetModule = 'BuildParts', targetFunction = 'partSpawn', args = {plateConfig.targetId, baseplate, team}, async = true, argsReq = true, caller = scriptName})
+		Router.execute(script.Name, {module = 'BuildParts', func = 'partSpawn', args = {plateConfig.targetId, baseplate, team}, async = true, argsReq = true})
 	elseif plateConfig.targetType == 'Conveyor' then
-		Router.execute({targetModule = 'Conveyors', targetFunction = 'spawnConveyor', args = {plateConfig.targetId, baseplate, team}, async = true, argsReq = true, caller = scriptName})
+		Router.execute(script.Name, {module = 'Conveyors', func = 'spawnConveyor', args = {plateConfig.targetId, baseplate, team}, async = true, argsReq = true})
 	end
 
 end
@@ -115,18 +116,16 @@ function plates.spawnPlate(plateId, baseplate, team)
 
 				plateConfig.destroyed = true
 				plateModel:Destroy()
-
-				Router.execute({
-					targetModule = 'PlatesOrder', 
-					targetFunction = 'nextPlate', 
+				
+				Router.execute(script.Name, {
+					module = 'PlatesOrder', 
+					func = 'nextPlate', 
 					args = {plateId, baseplate, team}, 
-					argsReq = true, 
-					caller = script.Name
+					argsReq = true
 				})
 			end
 		end
 	end
-	
 	
 	local player = team.players
 	local plateConfig = platesList[plateId]
