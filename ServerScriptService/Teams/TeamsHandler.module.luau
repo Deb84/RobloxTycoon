@@ -1,6 +1,7 @@
 local ServerScriptService = game:GetService('ServerScriptService')
 local Router = require(ServerScriptService.Utils.ModuleRouter)
-local teamsList, PathUtils = Router.getModules(script.Name, 'TeamsList', 'PathUtils')
+Router.modulesInit(script.Name, 'ModuleList')
+local teamsList, PathUtils, modulesList = Router.getModules(script.Name, {'TeamsList', 'PathUtils', 'ModuleList'})
 local TeamsHandler = {}
 
 
@@ -45,7 +46,6 @@ function TeamsHandler.teamsInit(team)
 	end
 	
 	local function listInit(team)
-		local modulesList = Router.getModules(script.Name, 'ModulesList')
 		local lists = modulesList.teamsLists
 		for _, list in pairs(lists) do
 			local newList = list:Clone()
@@ -53,6 +53,7 @@ function TeamsHandler.teamsInit(team)
 			PathUtils.addPathTo(newList.name, {'Teams', team.name}, newList)
 		end
 	end
+	
 	pathUtilsInit(team)
 	folderInit(team)
 	listInit(team)
@@ -61,8 +62,6 @@ function TeamsHandler.teamsInit(team)
 end
 
 function TeamsHandler.AddPlayer(player, team)
-	print(team.name)
-	print(player.UserId)
 	local team = teamsList[team.name]
 	if not team then return end
 	team.players[player.UserId] = player
