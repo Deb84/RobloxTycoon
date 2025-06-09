@@ -1,7 +1,8 @@
+local ServerScriptService = game:GetService('ServerScriptService')
 local Registry = require(script:FindFirstChild('ModuleRegistry'))
 local Executor = require(script:FindFirstChild('ModuleExecutor'))
 local Initializer = require(script:FindFirstChild('ModuleInitializer'))
-local ErrorHandler = require(script.Parent:FindFirstChild('ErrorHandler'))
+local ErrorHandler = require(ServerScriptService.Logs.ErrorHandler)
 local moduleRouter = {}
 
 
