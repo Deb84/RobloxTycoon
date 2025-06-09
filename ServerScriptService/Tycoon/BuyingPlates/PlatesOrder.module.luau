@@ -1,6 +1,6 @@
 local ServerScriptService = game:GetService('ServerScriptService')
 local platesOrderList = require(ServerScriptService.Tycoon.BuyingPlates.PlatesOrderList)
-local ModuleRouter = require(ServerScriptService.Utils.ModuleRouter)
+local ModuleRouter = require(ServerScriptService.ModuleRouter.ModuleRouter)
 local platesOrder = {}
 
 
