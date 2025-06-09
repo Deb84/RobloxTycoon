@@ -1,8 +1,8 @@
 local ServerScriptService = game:GetService('ServerScriptService')
 local Registry = require(script.Parent:FindFirstChild('ModuleRegistry'))
 local Initializer = require(script.Parent:FindFirstChild('ModuleInitializer'))
-local ErrorMessages = require(ServerScriptService.Messages.Errors)
-local WarnMessages = require(ServerScriptService.Messages.Warns)
+local ErrorMessages = require(ServerScriptService.Logs.Messages.Errors)
+local WarnMessages = require(ServerScriptService.Logs.Messages.Warns)
 local ModuleExecutor = {}
 
 assert(ErrorMessages, string.format('Unable to load "Errors" [error_location=%s]', script.Name))
@@ -24,7 +24,7 @@ function ModuleExecutor.execute(caller, msg)
 	local scriptCaller = string.format('%s[from=%s]', caller, script.Name) -- Set a new caller message for external script
 	
 	-- msg is a table that contains the instructions
-	-- msg strcuture :
+	-- msg structure :
 	-- message = {
 	--	module = 'targeted module',
 	--	func = 'function to call in the module',
@@ -91,7 +91,7 @@ function ModuleExecutor.execute(caller, msg)
 		end
 	end
 
-	local function checkFuncExistence(module, moduleName, funcName, caller)
+	local function checkFuncExistence(module, moduleName, funcName, caller) -- Check if the targeted function exists, if not raise an error
 		if not module[funcName] then
 			error(string.format(moduleErrorsMsg.FUNC_DOESNT_EXISTS, funcName, script.Name, moduleName, funcName, caller))
 		end
@@ -108,7 +108,6 @@ function ModuleExecutor.execute(caller, msg)
 				return module[funcName]()
 			end
 		end
-
 
 		-- if async true, launch a task
 		if msg.async then
