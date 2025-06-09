@@ -2,7 +2,7 @@ local ServerScriptService = game:GetService('ServerScriptService')
 local Players = game:GetService("Players")
 local plates = {}
 
-local Router = require(ServerScriptService.Utils.ModuleRouter)
+local Router = require(ServerScriptService.ModuleRouter.ModuleRouter)
 Router.modulesInit(script.Name, 'PlatesOrder')
 local platesList, CoinsUtils, PlacementUtils = Router.getModulesAndInit(script.name, {'PlatesList', 'CoinsUtils', 'PlacementUtils'})
 
