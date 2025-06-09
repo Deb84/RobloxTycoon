@@ -1,5 +1,5 @@
 local ModuleRegistry = require(script.Parent:FindFirstChild('ModuleRegistry'))
-local ModuleMap = require(script.Parent:FindFirstChild('ModuleList'))
+local ModuleMap = require(script.Parent.Parent:FindFirstChild('ModuleList'))
 
 local ModuleInitializer = {}
 
