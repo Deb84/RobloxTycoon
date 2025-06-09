@@ -4,6 +4,7 @@ local ModulesList = {}
 -- Globals lists
 ModulesList.modulesLists = {
 	TeamsList = ServerScriptService.Teams.TeamsList,
+	StartPlatesList = ServerScriptService.Tycoon.Start.StartPlatesList,
 	
 	ModuleList = script
 }
@@ -12,13 +13,13 @@ ModulesList.modulesLists = {
 ModulesList.teamsLists = {
 	ConveyorsList = ServerScriptService.Tycoon.Conveyors.ConveyorsList,
 	DroppersList = ServerScriptService.Tycoon.Droppers.DroppersList,
-	PlatesList = ServerScriptService.Tycoon.BuyingPlates.PlatesList,
-	StartPlatesList = ServerScriptService.Tycoon.Start.StartPlatesList,
+	PlatesList = ServerScriptService.Tycoon.BuyingPlates.PlatesList
 }
 
 
 -- Managers
 ModulesList.modulesManagers = {
+	ModuleRouter = ServerScriptService.ModuleRouter.ModuleRouter,
 	PlatesOrder = ServerScriptService.Tycoon.BuyingPlates.PlatesOrder,
 	TeamsHandler = ServerScriptService.Teams.TeamsHandler
 }
@@ -26,7 +27,7 @@ ModulesList.modulesManagers = {
 -- Utils
 ModulesList.modulesUtils = {
 	CoinsUtils = ServerScriptService.Leaderboard.CoinsUtils,
-	PathUtils = ServerScriptService.Utils.PathUtils,
+	InstanceRegistry = ServerScriptService.Utils.InstanceRegistry,
 	PlacementUtils = ServerScriptService.Utils.PlacementUtils
 }
 
@@ -38,26 +39,50 @@ ModulesList.modulesParts = {
 	BuildParts = ServerScriptService.Tycoon.BuildParts.BuildParts,
 }
 
+ModulesList.moduleLogs = {
+	ErrorHandler = ServerScriptService.Logs.ErrorHandler,
+	Errors = ServerScriptService.Logs.Messages.Errors,
+	Warns = ServerScriptService.Logs.Messages.Warns
+}
+
 ModulesList.map = {
 	ConveyorsList = ModulesList.teamsLists,
 	PlatesList = ModulesList.teamsLists,
-	StartPlatesList = ModulesList.teamsLists,
 	DroppersList = ModulesList.teamsLists,
 	
 	TeamsList = ModulesList.modulesLists,
+	StartPlatesList = ModulesList.modulesLists,
 	ModuleList = ModulesList.modulesLists,
 	
+	ModuleRouter = ModulesList.modulesManagers,
 	PlatesOrder = ModulesList.modulesManagers,
 	TeamsHandler = ModulesList.modulesManagers,
 	
 	CoinsUtils = ModulesList.modulesUtils,
-	PathUtils = ModulesList.modulesUtils,
+	InstanceRegistry = ModulesList.modulesUtils,
 	PlacementUtils = ModulesList.modulesUtils,
 	
 	Droppers = ModulesList.modulesParts,
 	Plates = ModulesList.modulesParts,
 	Conveyors = ModulesList.modulesParts,
-	BuildParts = ModulesList.modulesParts
+	BuildParts = ModulesList.modulesParts,
+	
+	ErrorHandler = ModulesList.moduleLogs,
+	Errors = ModulesList.moduleLogs,
+	Warns = ModulesList.moduleLogs
 }
+
+
+function ModulesList.getModulePath(moduleName)
+	if not ModulesList.map[moduleName] then
+		error()
+	end
+	
+	local mapPath = ModulesList.map[moduleName]
+	if not mapPath[moduleName] then
+		error()
+	end
+	return mapPath[moduleName]
+end
 
 return ModulesList
