@@ -6,6 +6,13 @@ local ErrorHandler = require(ServerScriptService.Logs.ErrorHandler)
 local moduleRouter = {}
 
 
+assert(Registry)
+assert(Executor)
+assert(Initializer)
+
+
+
+
 
 -- For the recursive imports
 function moduleRouter.modulesInit(caller, moduleNames)
@@ -24,6 +31,7 @@ function moduleRouter.execute(caller, message)
 		return Executor.execute(caller, message)
 	end, ErrorHandler.warnHandler)
 	if success then
+		
 		print('sucess: '..message.module)
 		return result
 	end
