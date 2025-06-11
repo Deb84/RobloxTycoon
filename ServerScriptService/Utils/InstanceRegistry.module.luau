@@ -82,6 +82,7 @@ function PathUtils.addPath(pathName, path)
 end
 
 function PathUtils.addPathTo(pathName, parents, path)
+	print('a')
 	local parentTable = tableDiving(Paths, parents, true)
 	if parentTable then
 		if not parentTable[pathName]  then
@@ -113,7 +114,6 @@ function PathUtils.getPath(pathName, parents)
 				return parentTable[pathName]
 			end
 		end
-		
 	end
 end
 
