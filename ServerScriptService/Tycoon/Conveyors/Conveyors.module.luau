@@ -2,13 +2,14 @@ local ServerScriptService = game:GetService('ServerScriptService')
 local Tycoon = ServerScriptService:WaitForChild('Tycoon')
 local conveyorsList = require(Tycoon.Conveyors.ConveyorsList)
 local beltUtils = require(ServerScriptService.Tycoon.Conveyors.Belt)
-local ModuleRouter = require(ServerScriptService.Utils.ModuleRouter)
+local ModuleRouter = require(ServerScriptService.ModuleRouter.ModuleRouter)
 local destroyer = require(ServerScriptService.Tycoon.Conveyors.Destroyer)
 local PlacementUtils = require(ServerScriptService.Utils.PlacementUtils)
 local conveyors = {}
 
 
 function conveyors.spawnConveyor(conveyorId, baseplate, team)
+	print('here')
 	local conveyorConfig = conveyorsList.conveyorsList[conveyorId]
 	if not conveyorConfig.spawned then
 		conveyorConfig.spawned = true
