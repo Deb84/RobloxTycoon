@@ -1,1 +1,1 @@
-My first roblox game/project for train myself
+My first roblox game/project to train myself
