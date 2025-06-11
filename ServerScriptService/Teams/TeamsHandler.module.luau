@@ -1,7 +1,7 @@
 local ServerScriptService = game:GetService('ServerScriptService')
-local Router = require(ServerScriptService.Utils.ModuleRouter)
+local Router = require(ServerScriptService.ModuleRouter.ModuleRouter)
 Router.modulesInit(script.Name, 'ModuleList')
-local teamsList, PathUtils, modulesList = Router.getModules(script.Name, {'TeamsList', 'PathUtils', 'ModuleList'})
+local teamsList, InstanceRegistry, modulesList = Router.getModules(script.Name, {'TeamsList', 'InstanceRegistry', 'ModuleList'})
 local TeamsHandler = {}
 
 
@@ -18,7 +18,7 @@ function TeamsHandler.teamsInit(team)
 			
 			teamFolder.Name = team.name
 			teamFolder.Parent = workspace.Teams
-			PathUtils.addPathTo('TeamsWorkspaceFolder', {'Teams', team.name}, teamFolder)
+			InstanceRegistry.addPathTo('TeamsWorkspaceFolder', {'Teams', team.name}, teamFolder)
 			
 		end
 
@@ -28,7 +28,7 @@ function TeamsHandler.teamsInit(team)
 			droppedPartsFolder:SetAttribute('Team', team.name)
 			droppedPartsFolder.Name = 'DroppedParts'
 			droppedPartsFolder.Parent = workspace:WaitForChild('Teams'):WaitForChild(team.name)
-			PathUtils.addPathTo('DroppedParts', {'Teams', team.name}, droppedPartsFolder)
+			InstanceRegistry.addPathTo('DroppedParts', {'Teams', team.name}, droppedPartsFolder)
 		end
 		
 		-- ServerScriptService
@@ -37,27 +37,27 @@ function TeamsHandler.teamsInit(team)
 
 			teamFolder.Name = team.name
 			teamFolder.Parent = ServerScriptService.Game.Teams
-			PathUtils.addPathTo('TeamSSSFolder', {'Teams', team.name}, teamFolder)
+			InstanceRegistry.addPathTo('TeamSSSFolder', {'Teams', team.name}, teamFolder)
 		end
 	end
 	
 	local function pathUtilsInit(team)
-		PathUtils.addTableTo(team.name, 'Teams')
+		InstanceRegistry.addTableTo(team.name, 'Teams')
 	end
 	
 	local function listInit(team)
 		local lists = modulesList.teamsLists
 		for _, list in pairs(lists) do
 			local newList = list:Clone()
-			newList.Parent = PathUtils.getPath('TeamSSSFolder', {'Teams', team.name})
-			PathUtils.addPathTo(newList.name, {'Teams', team.name}, newList)
+			newList.Parent = InstanceRegistry.getPath('TeamSSSFolder', {'Teams', team.name})
+			InstanceRegistry.addPathTo(newList.name, {'Teams', team.name}, newList)
 		end
 	end
 	
 	pathUtilsInit(team)
 	folderInit(team)
 	listInit(team)
-	print(PathUtils.getPaths())
+	print(InstanceRegistry.getPaths())
 	return true
 end
 
