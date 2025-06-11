@@ -33,6 +33,7 @@ ModulesList.modulesUtils = {
 
 -- Parts
 ModulesList.modulesParts = {
+	StartPlates = ServerScriptService.Init.ServerStart.StartPlates,
 	Droppers = ServerScriptService.Tycoon.Droppers.Droppers,
 	Plates = ServerScriptService.Tycoon.BuyingPlates.Plates,
 	Conveyors = ServerScriptService.Tycoon.Conveyors.Conveyors,
@@ -62,6 +63,7 @@ ModulesList.map = {
 	InstanceRegistry = ModulesList.modulesUtils,
 	PlacementUtils = ModulesList.modulesUtils,
 	
+	StartPlates = ModulesList.modulesParts,
 	Droppers = ModulesList.modulesParts,
 	Plates = ModulesList.modulesParts,
 	Conveyors = ModulesList.modulesParts,
