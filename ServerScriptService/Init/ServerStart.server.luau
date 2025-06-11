@@ -13,21 +13,28 @@ end
 local ModuleList = getModuleList()
 assert(ModuleList)
 
+local ModuleAssertion = require(ServerScriptService.Init.ServerStart.ModuleAssertion)
+assert(ModuleAssertion and ModuleAssertion.ModuleAssertion)
+
 local Router = require(ModuleList.getModulePath('ModuleRouter'))
-assert(Router)
 
 Router.modulesInit(script.Name, 'InstanceRegistry')
 
 local FolderInit = require(script:FindFirstChild('FolderInit'))
-assert(FolderInit)
 
-Router.modulesInit(script.Name, {'StartPlatesList', 'TeamsList', 'TeamsHandler'})
+Router.modulesInit(script.Name, {'StartPlatesList', 'TeamsList'})
+
+local TeamsInit = require(script:FindFirstChild('TeamsInit'))
 
 
 
 
 FolderInit.GameScriptFolderInit()
 FolderInit.TeamsWorkspaceFolder()
+TeamsInit.teamsInit()
+
+
+
 
 
 
