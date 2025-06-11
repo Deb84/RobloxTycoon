@@ -5,6 +5,7 @@ local ModuleInitializer = {}
 
 
 function ModuleInitializer.modulesInit(caller, moduleNames)
+	
 	local function moduleListRegister(modulesList)
 		for _, module in pairs(modulesList) do
 			if not ModuleRegistry.isRegistered(script.name, module) then
@@ -74,8 +75,8 @@ function ModuleInitializer.modulesInit(caller, moduleNames)
 		-- handle single and multiple init
 	elseif moduleNames then
 		if type(moduleNames) == 'table' then
-			for _, modulesName in ipairs(moduleNames) do
-				local response = moduleRegister(modulesName)
+			for _, moduleName in ipairs(moduleNames) do
+				local response = moduleRegister(moduleName)
 				if not response then 
 					return false 
 				else 
