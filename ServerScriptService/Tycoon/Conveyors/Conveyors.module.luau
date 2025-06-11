@@ -9,7 +9,6 @@ local conveyors = {}
 
 
 function conveyors.spawnConveyor(conveyorId, baseplate, team)
-	print('here')
 	local conveyorConfig = conveyorsList.conveyorsList[conveyorId]
 	if not conveyorConfig.spawned then
 		conveyorConfig.spawned = true
