@@ -22,6 +22,7 @@ local function targetSelect(plateConfig, plateId, baseplate, team)
 	elseif plateConfig.targetType == 'Part' then
 		Router.execute(script.Name, {module = 'BuildParts', func = 'partSpawn', args = {plateConfig.targetId, baseplate, team}, async = true, argsReq = true})
 	elseif plateConfig.targetType == 'Conveyor' then
+		Router.modulesInit('Conveyors')
 		Router.execute(script.Name, {module = 'Conveyors', func = 'spawnConveyor', args = {plateConfig.targetId, baseplate, team}, async = true, argsReq = true})
 	end
 
