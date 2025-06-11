@@ -6,12 +6,13 @@ local WarnMessages = require(ServerScriptService.Logs.Messages.Warns)
 local ModuleExecutor = {}
 
 assert(ErrorMessages, string.format('Unable to load "Errors" [error_location=%s]', script.Name))
-assert(ErrorMessages.executor, string.format('Unable to load Errors.executor [error_location=%s]', script.Name))
-local moduleErrorsMsg = ErrorMessages.executor
+assert(ErrorMessages.ModuleRouter.Executor, string.format('Unable to load Errors.ModuleRouter.Executor [error_location=%s]', script.Name))
+local moduleErrorsMsg = ErrorMessages.ModuleRouter.Executor
+local globalsErrorMsg = ErrorMessages.globals
 
-assert(WarnMessages, string.format(moduleErrorsMsg.NO_WARNS, script.Name))
-assert(WarnMessages.executor, string.format(moduleErrorsMsg.NO_WARNS_EXECUTOR, script.Name))
-local moduleWarnMsg = WarnMessages.executor
+assert(WarnMessages, string.format(globalsErrorMsg.NO_WARNS, script.Name))
+assert(WarnMessages.ModuleRouter.Executor, string.format(moduleErrorsMsg.NO_WARNS, script.Name))
+local moduleWarnMsg = WarnMessages.ModuleRouter.Executor
 
 assert(Registry, string.format(moduleErrorsMsg.NO_REGISTRY, script.Name))
 assert(Initializer, string.format(moduleWarnMsg.NOT_INITIALIZER, script.Name))
@@ -28,12 +29,12 @@ function ModuleExecutor.execute(caller, msg)
 	-- message = {
 	--	module = 'targeted module',
 	--	func = 'function to call in the module',
-	--	args = {args1, args2, args3}
+	--	args = {args1, args2, args3, etc}
 	-- async = bool (optional, default false)
 	-- argsReq = bool (optional, default false) 
 	-- result = bool (optional, default false)
-	-- pcall = bool (optional, default false) TODO
-	-- init = bool (optional, default true) DO
+	-- pcall = bool (optional, default false)
+	-- init = bool (optional, default true)
 	--}
 	
 
@@ -42,19 +43,12 @@ function ModuleExecutor.execute(caller, msg)
 	local args = msg.args
 
 	local function checkMessage(msg, moduleName, funcName, args, caller) -- Check if the message is correct
-		if not msg then -- Check if the message exist
-			error(string.format(moduleErrorsMsg.NOT_MESSAGE, script.Name, caller))
-		elseif type(msg) ~= 'table' then -- Check if the msg is a table
-			error(string.format(moduleErrorsMsg.MSG_ISNT_TABLE, script.Name, caller))
-		elseif not moduleName then -- Check if the message have the module name
-			error(string.format(moduleErrorsMsg.NOT_TARGET_MODULE_IN_MESSAGE, script.Name, caller))
-		elseif not funcName then -- Check if the message have the function name
-			error(string.format(moduleErrorsMsg.NOT_TARGETED_FUNCTION_IN_MESSAGE, script.Name, caller))
-		elseif msg.argsReq and not args then -- Check if the message have the arguments when required
-			error(string.format(moduleErrorsMsg.ARGS_REQ_BUT_NOT_ARGS, moduleName, funcName, caller))
-		else
-			return true
-		end
+		assert(msg, string.format(moduleErrorsMsg.NO_MSG, script.Name, caller)) -- check if the message exists
+		assert(type(msg) == 'table', string.format(moduleErrorsMsg.MSG_ISNT_TABLE, script.Name, caller))
+		assert(moduleName, string.format(moduleErrorsMsg.NO_MODULE_IN_MSG, script.Name, caller))
+		assert(funcName, string.format(moduleErrorsMsg.NO_FUNC_IN_MSG, script.Name, caller))
+		assert(msg.argsReq and args, string.format(moduleErrorsMsg.ARGS_NIL, moduleName, funcName, caller))
+		return true
 	end
 
 
@@ -65,7 +59,7 @@ function ModuleExecutor.execute(caller, msg)
 			end
 		end
 
-		Initializer.modulesInit(scriptCaller, moduleName, caller) -- Initialize the module if msg.init is true
+		Initializer.modulesInit(scriptCaller, moduleName) -- Initialize the module if msg.init is true
 
 		if not Registry.isRegistered(scriptCaller, moduleName) then -- check a second time if the module is registered, if not raise an error
 			error(string.format(moduleErrorsMsg.MODULE_NO_INIT, moduleName, script.Name, moduleName, funcName, caller))
