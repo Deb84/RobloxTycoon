@@ -12,7 +12,7 @@ Errors.ServerStart = {
 		NO_WARNS = 'Unable to load Warns.ModuleRouter.FolderInit [error_location="%s"]'
 	},
 	
-	TeamsInit = {
+	StartPlates = {
 		NO_STARTPLATESLIST = 'StartPlatesList indexed "nil" [error_location=%s]',
 		STARTPLATESLIST_ISNT_TABLE = `StartPlatesList isn't a table [error_location=%s]`,
 		
