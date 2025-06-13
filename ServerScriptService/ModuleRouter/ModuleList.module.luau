@@ -17,6 +17,15 @@ ModulesList.teamsLists = {
 }
 
 
+ModulesList.moduleInit = {
+	FoldersInit = ServerScriptService.Init.ServerStart.FoldersInit,
+	TeamsInit = ServerScriptService.Teams.TeamsHandler.TeamsInit,
+	TeamsFoldersInit = ServerScriptService.Teams.TeamsHandler.TeamsInit.TeamsFoldersInit,
+	InstanceRegistryTeamsInit = ServerScriptService.Teams.TeamsHandler.TeamsInit.InstanceRegistryTeamsInit,
+	TeamsListsInit = ServerScriptService.Teams.TeamsHandler.TeamsInit.TeamsListsInit
+}
+
+
 -- Managers
 ModulesList.modulesManagers = {
 	ModuleRouter = ServerScriptService.ModuleRouter.ModuleRouter,
@@ -33,7 +42,7 @@ ModulesList.modulesUtils = {
 
 -- Parts
 ModulesList.modulesParts = {
-	StartPlates = ServerScriptService.Init.ServerStart.StartPlates,
+	StartPlates = ServerScriptService.Teams.TeamsHandler.TeamsInit.StartPlates,
 	Droppers = ServerScriptService.Tycoon.Droppers.Droppers,
 	Plates = ServerScriptService.Tycoon.BuyingPlates.Plates,
 	Conveyors = ServerScriptService.Tycoon.Conveyors.Conveyors,
@@ -50,6 +59,12 @@ ModulesList.map = {
 	ConveyorsList = ModulesList.teamsLists,
 	PlatesList = ModulesList.teamsLists,
 	DroppersList = ModulesList.teamsLists,
+	
+	FoldersInit = ModulesList.moduleInit,
+	TeamsInit = ModulesList.moduleInit,
+	TeamsFoldersInit = ModulesList.moduleInit,
+	InstanceRegistryTeamsInit = ModulesList.moduleInit,
+	TeamsListsInit = ModulesList.moduleInit,
 	
 	TeamsList = ModulesList.modulesLists,
 	StartPlatesList = ModulesList.modulesLists,
