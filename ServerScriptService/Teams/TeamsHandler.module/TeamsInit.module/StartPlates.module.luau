@@ -2,17 +2,18 @@ local SSS = game:GetService('ServerScriptService')
 local Players = game:GetService('Players')
 local ModuleList = require(SSS.ModuleRouter.ModuleList)
 local Router = require(ModuleList.getModulePath('ModuleRouter'))
-local StartPlatesList, TeamsHandler, PlacementUtils = Router.getModulesAndInit(script.Name, {'StartPlatesList', 'TeamsHandler', 'PlacementUtils'})
+local StartPlatesList, PlacementUtils = Router.getModulesAndInit(script.Name, {'StartPlatesList', 'PlacementUtils'})
 
 local ErrorsMsg = require(SSS.Logs.Messages.Errors)
 local WarnsMsg = require(SSS.Logs.Messages.Warns)
-local ModuleErrorMsg = ErrorsMsg.ServerStart.TeamsInit
-local ModuleWarnMsg = WarnsMsg.ServerStart.TeamsInit
+local ModuleErrorMsg = ErrorsMsg.ServerStart.StartPlates
+local ModuleWarnMsg = WarnsMsg.ServerStart.StartPlates
 
 
 local StartPlates = {}
 
 function StartPlates.spawnStartPlate(baseplate, team)
+	print(team)
 	local errorLoc = string.format('%s[spawnStartPlate]', script.Name)
 	
 	local function checkStartPlatesList()
@@ -83,7 +84,8 @@ function StartPlates.spawnStartPlate(baseplate, team)
 			
 			startPlate.PrimaryPart.Transparency = teamStartPlate.newTransparency
 			
-			TeamsHandler.AddPlayer(player, team)
+			print(team)
+			Router.execute(script.Name, {module = 'TeamsHandler', func = 'AddPlayer', args = {player, team}, argsReq = true})
 			
 			Router.execute(script.Name, {module = 'Plates', func = 'spawnPlate', args = {1, baseplate, team}, argsReq = true, async = true})
 			
