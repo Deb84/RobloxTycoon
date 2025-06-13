@@ -47,7 +47,7 @@ function ModuleExecutor.execute(caller, msg)
 		assert(type(msg) == 'table', string.format(moduleErrorsMsg.MSG_ISNT_TABLE, script.Name, caller))
 		assert(moduleName, string.format(moduleErrorsMsg.NO_MODULE_IN_MSG, script.Name, caller))
 		assert(funcName, string.format(moduleErrorsMsg.NO_FUNC_IN_MSG, script.Name, caller))
-		assert(msg.argsReq and args, string.format(moduleErrorsMsg.ARGS_NIL, moduleName, funcName, caller))
+		assert(not (msg.argsRes == true and args == nil), string.format(moduleErrorsMsg.ARGS_NIL, moduleName, funcName, caller))
 		return true
 	end
 
@@ -66,7 +66,7 @@ function ModuleExecutor.execute(caller, msg)
 		end
 	end
 	
-	local function argsFormat(args, moduleName, funcName, caller)
+	local function argsCheckAndFormat(args, moduleName, funcName, caller)
 		if type(args) == 'string' then -- If args is a string, put it in a table
 			return {args} 
 		elseif type(args) ~= 'table' then -- Raise an error if args is not a table
@@ -96,7 +96,7 @@ function ModuleExecutor.execute(caller, msg)
 	local function executor(module, funcName, args, msg, caller)
 		
 		local function callFunc() -- execute the function and give args if required
-			if msg.argsReq and args then
+			if args then
 				return module[funcName](table.unpack(args))
 			else
 				return module[funcName]()
@@ -129,7 +129,7 @@ function ModuleExecutor.execute(caller, msg)
 
 		ensureModuleInit(moduleName, funcName, scriptCaller, caller) -- check if the module is initialized (and init if possible)
 		
-		args = argsFormat(args, moduleName, funcName, caller) -- check and format the args
+		args = argsCheckAndFormat(args, moduleName, funcName, caller) -- check and format the args
 
 		local module = getModule(moduleName) -- get the module from its name
 		
