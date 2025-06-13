@@ -26,7 +26,7 @@ local function DestroyPart(destroyerModel, destroyerPart, team)
 					local partTeam = other_part:GetAttribute('Team')
 
 					if partValue then
-						CoinsUtils.addCoins(team.player, partValue)
+						CoinsUtils.addCoins(team.coins, partValue)
 					end
 					
 					other_part:Destroy()
