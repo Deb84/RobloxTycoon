@@ -1,7 +1,6 @@
 local ServerScriptService = game:GetService('ServerScriptService')
 local ModuleList = require(ServerScriptService.ModuleRouter.ModuleList)
-local Router = require(ModuleList.getModulePath('ModuleRouter'))
-local InstanceRegistry = Router.getModule(script.Name, 'InstanceRegistry')
+local InstanceRegistry = require(ModuleList.getModulePath('InstanceRegistry'))
 
 local FolderInit = {}
 
@@ -11,18 +10,12 @@ function FolderInit.GameScriptFolderInit()
 	gameFolder.Parent = ServerScriptService
 	InstanceRegistry.addPath('GameSSSFolder', gameFolder)
 	
-	if not ServerScriptService:FindFirstChild('Game') then
-		error()
-	end
 
 	local teamsFolder = Instance.new('Folder')
 	teamsFolder.Name = 'Teams'
 	teamsFolder.Parent = ServerScriptService.Game
 	InstanceRegistry.addPath('TeamsSSSFolder', teamsFolder)
 	
-	if not ServerScriptService.Game:FindFirstChild('Teams') then
-		error()
-	end
 end
 
 function FolderInit.TeamsWorkspaceFolder()
@@ -31,9 +24,7 @@ function FolderInit.TeamsWorkspaceFolder()
 		teamsFolder.Name = 'Teams'
 		teamsFolder.Parent = workspace
 	end
-	if not workspace:FindFirstChild('Teams') then
-		error()
-	end
+	
 end
 
 
