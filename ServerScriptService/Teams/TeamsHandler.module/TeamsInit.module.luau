@@ -1,7 +1,7 @@
 local ServerScriptService = game:GetService('ServerScriptService')
 local ModuleList = require(ServerScriptService.ModuleRouter.ModuleList)
 local Router = require(ModuleList.getModulePath('ModuleRouter'))
-local StartPlates = require(script.Parent:FindFirstChild('StartPlates'))
+local StartPlates = require(ModuleList.getModulePath('StartPlates'))
 local ErrorMessages = require(ServerScriptService.Logs.Messages.Errors)
 local WarnMessages = require(ServerScriptService.Logs.Messages.Warns)
 
@@ -12,16 +12,13 @@ local globalsErrorMsg = ErrorMessages.globals
 local moduleWarnMsg = WarnMessages.ServerStart.FolderInit
 local globalsWarnMsg = WarnMessages.globals
 
-local Teamslist, TeamsHandler, InstanceRegistry = Router.getModules(
-	script.Name, {
-		'TeamsList', 
-		'TeamsHandler',
-		'InstanceRegistry'
-	})
+local Teamslist, InstanceRegistry = Router.getModules(script.Name, {'TeamsList','InstanceRegistry'})
+local InstanceRegistryTeamsInit = require(ModuleList.getModulePath('InstanceRegistryTeamsInit'))
+local TeamsFoldersInit = require(ModuleList.getModulePath('TeamsFoldersInit'))
+local TeamsListsInit = require(ModuleList.getModulePath('TeamsListsInit'))
 
 
-
-function TeamsInit.teamsInit()
+function TeamsInit.teamsInit(teamList)
 	
 	local function checkTeam(team)
 		assert(team)
@@ -48,7 +45,7 @@ function TeamsInit.teamsInit()
 			part.Anchored = true
 		end
 		
-		baseplate.Parent = workspace:WaitForChild('Teams'):WaitForChild(team.name)	-- Set the parent as the team folder in workspace.Teams (existence already check by FolderInit)
+		baseplate.Parent = workspace:WaitForChild('Teams'):WaitForChild(team.name)	-- Set the parent as the team folder in workspace.Teams (existence already checked by FolderInit)
 		
 		return baseplate
 	end
@@ -56,7 +53,10 @@ function TeamsInit.teamsInit()
 	
 	for _, team in pairs(Teamslist) do
 		checkTeam(team)
-		TeamsHandler.teamsInit(team) -- TODO add an error on the function side
+		
+		InstanceRegistryTeamsInit.InstanceRegistryAddTeamsTable(team.name)
+		TeamsListsInit.teamListsInit(team.name)
+		TeamsFoldersInit.TeamsFoldersInit(team.name)
 		
 		local baseplate = spawnBaseplate(team)
 		
