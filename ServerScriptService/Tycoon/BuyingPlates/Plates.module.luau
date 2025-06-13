@@ -96,8 +96,8 @@ function plates.spawnPlate(plateId, baseplate, team)
 			if leaderstats then
 				local balance = leaderstats:WaitForChild('Coins').Value
 
-				if balance >= plateConfig.targetPrice then
-					CoinsUtils.removeCoins(playerTouched, plateConfig.targetPrice)
+				if balance >= plateConfig.targetPrice then -- to remake
+					CoinsUtils.removeCoins(team.coins, plateConfig.targetPrice) -- Add a verification on coinsutils
 					return true
 				else
 					print('Pas assez ! '.. plateConfig.targetPrice - balance)
