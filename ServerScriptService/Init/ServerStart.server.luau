@@ -20,18 +20,18 @@ local Router = require(ModuleList.getModulePath('ModuleRouter'))
 
 Router.modulesInit(script.Name, 'InstanceRegistry')
 
-local FolderInit = require(script:FindFirstChild('FolderInit'))
+local FolderInit = require(script:FindFirstChild('FoldersInit'))
 
 Router.modulesInit(script.Name, {'StartPlatesList', 'TeamsList'})
 
-local TeamsInit = require(script:FindFirstChild('TeamsInit'))
+local TeamsHandler = require(ModuleList.getModulePath('TeamsHandler'))
 
 
 
 
 FolderInit.GameScriptFolderInit()
 FolderInit.TeamsWorkspaceFolder()
-TeamsInit.teamsInit()
+TeamsHandler.teamsInit()
 
 
 
