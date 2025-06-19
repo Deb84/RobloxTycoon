@@ -20,8 +20,17 @@ assert(Initializer.modulesInit, string.format(moduleWarnMsg.NOTINITIALIZER_MODUL
 
 
 
-
-function ModuleExecutor.execute(caller, msg)
+function ModuleExecutor.execute(caller: string, msg: {
+	module: string,
+	func: string,
+	args: (string | table)?,
+	async: boolean?,
+	argsReq: boolean?,
+	result: boolean?,
+	pcall: boolean?,
+	init: boolean?
+	})
+	
 	local scriptCaller = string.format('%s[from=%s]', caller, script.Name) -- Set a new caller message for external script
 	
 	-- msg is a table that contains the instructions
