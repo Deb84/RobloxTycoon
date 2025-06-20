@@ -2,7 +2,7 @@
 	-- centralize the error messages
 
 
-SSS = game:GetService('ServerScriptService')
+local SSS = game:GetService('ServerScriptService')
 
 local MessagesManager = {}
 
@@ -82,8 +82,8 @@ local function init()
 		end
 	end
 	
-	print(moduleCache)
-	print(MessagesManager.msg)
+	print(moduleCache) -- TODELETE
+	print(MessagesManager.msg) -- TODELETE
 	
 end
 
@@ -115,7 +115,7 @@ local function getMessage(level: string, code: string, stringFormatArgs: table |
 				args = {args}
 			end
 			
-			-- check the number of args required
+			-- check the number of args required & received
 			local _, countArgsRequired = string.gsub(msg, "%%s", "")
 			local countArgsGived = #args
 			if countArgsGived ~= countArgsRequired then
