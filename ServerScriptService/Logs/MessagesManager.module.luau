@@ -1,3 +1,7 @@
+-- Refactorisation :
+	-- centralize the error messages
+
+
 SSS = game:GetService('ServerScriptService')
 
 local MessagesManager = {}
@@ -10,9 +14,6 @@ local CONFIG = {
 		
 		INCORRECT_PATH = 'Unable to find the messages module "%s" [error_location="%s"]',
 		
-		UNKNOW_CODE = string.format('Unknown log code [error_location=%s]', script.Name),
-		CODE_NIL = string.format('Log code indexed as "nil" [error_location=%s]', script.Name),
-		ARGS_NIL = string.format('Log message args indexed as "nil" [error_location=%s]', script.Name)
 	},
 	MODULES = {
 		INFO = 'Info',
