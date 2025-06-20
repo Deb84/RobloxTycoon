@@ -4,14 +4,12 @@ local MessagesManager = {}
 
 local CONFIG = {
 	FALLBACK_ERRORS = {
-		INFO = string.format('Unable to find the module "Info" [error_location=%s]', script.Name),
-		ERROR = string.format('Unable to find the module "Error" [error_location=%s]', script.Name),
-		WARN = string.format('Unable to find the module "Warn" [error_location=%s]', script.Name),
+		INFO = string.format('Unable to find the module "Info" [error_location="%s"]', script.Name),
+		ERROR = string.format('Unable to find the module "Error" [error_location="%s"]', script.Name),
+		WARN = string.format('Unable to find the module "Warn" [error_location="%s"]', script.Name),
 		
-		INCORRECT_PATH = 'Unable to find the messages module "%s" [error_location=%s]',
+		INCORRECT_PATH = 'Unable to find the messages module "%s" [error_location="%s"]',
 		
-		UNKNOW_TYPE = string.format('Unable to find the message type [error_location=%s]', script.Name),
-		TYPE_NIL = string.format('Logs type indexed as "nil" [error_location=%s]', script.Name),
 		UNKNOW_CODE = string.format('Unknown log code [error_location=%s]', script.Name),
 		CODE_NIL = string.format('Log code indexed as "nil" [error_location=%s]', script.Name),
 		ARGS_NIL = string.format('Log message args indexed as "nil" [error_location=%s]', script.Name)
@@ -24,11 +22,14 @@ local CONFIG = {
 	BASE_PATH = SSS.Logs.Messages
 }
 
+-- Always normalize the level with uppercase !
+
+
 local moduleCache = {}
 
-local function traceback()
-	print(debug.traceback())
-end
+--local function traceback()
+--	print(debug.traceback())
+--end
 
 local function init()
 	local function moduleInit() -- require the modules of CONFIG.MODULES
@@ -57,12 +58,12 @@ local function init()
 		end
 	end
 	
-	local function putInFlatTable(t: table, list: table) -- put the messages in a flat table
+	local function flattenMessagesTable(t: table, list: table) -- put the messages in a flat table
 		list = list or {}
 		
 		for key, item in pairs(t) do
 			if type(item) == 'table' then
-				putInFlatTable(item, list)
+				flattenMessagesTable(item, list)
 			else
 				list[key] = item
 			end
@@ -76,7 +77,7 @@ local function init()
 	
 	for key, module in pairs(moduleCache) do -- put each modules in a flat table
 		if next(module) and key then
-			MessagesManager.msg[key] = putInFlatTable(module)
+			MessagesManager.msg[key] = flattenMessagesTable(module)
 		end
 	end
 	
@@ -87,38 +88,59 @@ end
 
 
 local function getMessage(level: string, code: string, stringFormatArgs: table | string)
-	level = string.upper(level)
 	
-	local function getMsg(level, code)
+	local function getMsg(level, code) -- get the message from the flat
 		if not MessagesManager.msg[level]  then
-			error(string.format('Uncorret log level "%s" [error_location=%s]', level, script.Name))
+			error(string.format('Incorrect log level "%s" [error_location="%s"]', level, script.Name))
 		end
 		
 		local levelModule: table = MessagesManager.msg[level]
 		
 		if not levelModule[code] then
-			error(string.format('Uncorrect code "%s" [error_location=%s]', code, script.Name))
+			error(string.format('Incorrect code "%s" [error_location="%s"]', code, script.Name))
 		end
 		
 		local msg: string = levelModule[code]
-		
-		if not msg then
-			error(string.format('Invalid code "%s" [error_location=%s]', code, script.Name))
-		end
 		
 		return msg
 	end
 	
 	
-	local function formatMessage(msg: string, args)
-		if type(args) ~= 'table' then
-			args = {args}
+	local function formatMessage(msg: string, args) -- format the message with string format and args
+		local msgBuild
+		
+		if args  then
+			if type(args) ~= 'table' then
+				args = {args}
+			end
+			
+			-- check the number of args required
+			local _, countArgsRequired = string.gsub(msg, "%%s", "")
+			local countArgsGived = #args
+			if countArgsGived ~= countArgsRequired then
+				error(string.format('Incorrect number of arguments, expected : %i, receive : %i [error_location="%s"]', countArgsRequired, countArgsRequired, script.Name))
+			end
+			
+			
+			msgBuild = string.format(msg, table.unpack(args))
+		else
+			msgBuild = msg
 		end
 		
-		local msgBuild = string.format(msg, table.unpack(args))
 		return msgBuild
 	end
 	
+	-- check if level & code exist
+	if not level then
+		error(string.format('Level indexed to "nil" [error_location="%s"]', script.Name))
+	elseif not code then
+		error(string.format('Code indexed to "nil" [error_location="%s"]', script.Name))
+	end
+	
+	level = string.upper(level) -- normalize the level
+	
+	
+	-- get the message and return the formated code
 	
 	local msg = getMsg(level, code)
 	
