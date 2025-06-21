@@ -19,7 +19,8 @@ ModulesList.orderedList = {
 			Warn = SSS.Logs.Messages.Warn,
 			Info = SSS.Logs.Messages.Info
 		},
-		ErrorHandler = SSS.Logs.ErrorHandler
+		ErrorHandler = SSS.Logs.ErrorHandler,
+		LogsMessagesManager = SSS.Logs.LogsMessagesManager
 	},
 	ModuleRouter = {
 		ModuleList = script,
@@ -84,18 +85,5 @@ ModulesList.orderedList = {
 -- Mettre tout les modules dans une grande liste globale (vérifier les nom doubles)
 
 
-
-
-function ModulesList.getModulePath(moduleName)
-	if not ModulesList.map[moduleName] then
-		error()
-	end
-	
-	local mapPath = ModulesList.map[moduleName]
-	if not mapPath[moduleName] then
-		error()
-	end
-	return mapPath[moduleName]
-end
 
 return ModulesList
