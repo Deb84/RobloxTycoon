@@ -3,7 +3,7 @@ local Registry = {}
 Registry.modules = {}
 
 
-function Registry.Register(caller, targetName, module)
+function Registry.Register(caller: string, targetName: string, module: module)
 	if not Registry.modules[targetName] then
 		Registry.modules[targetName] = module
 	end
@@ -34,6 +34,10 @@ function Registry.getModule(caller, moduleName)
 end
 
 function Registry.getModules(caller, moduleNames)
+	if type(moduleNames) ~= 'table' then
+		moduleNames = {moduleNames}
+	end
+	
 	local moduleList = {}
 	for _, moduleName in pairs(moduleNames) do
 		if Registry.modules[moduleName] then
