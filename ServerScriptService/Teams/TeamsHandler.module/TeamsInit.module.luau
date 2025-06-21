@@ -1,21 +1,17 @@
-local ServerScriptService = game:GetService('ServerScriptService')
-local ModuleList = require(ServerScriptService.ModuleRouter.ModuleList)
-local Router = require(ModuleList.getModulePath('ModuleRouter'))
-local StartPlates = require(ModuleList.getModulePath('StartPlates'))
-local ErrorMessages = require(ServerScriptService.Logs.Messages.Errors)
-local WarnMessages = require(ServerScriptService.Logs.Messages.Warns)
+local SSS = game:GetService('ServerScriptService')
+local MLM = require(SSS.ModuleRouter.ModuleListManager)
+local Router = require(MLM.getModulePath('ModuleRouter'))
+local StartPlates = Router.getModulesAndInit(script.Name, 'StartPlates')
+local LogsMsg = require(SSS.Logs.LogsMessagesManager)
 
 local TeamsInit = {}
 
-local moduleErrorsMsg = ErrorMessages.ServerStart.TeamsInit
-local globalsErrorMsg = ErrorMessages.globals
-local moduleWarnMsg = WarnMessages.ServerStart.FolderInit
-local globalsWarnMsg = WarnMessages.globals
 
+-- TODO
 local Teamslist, InstanceRegistry = Router.getModules(script.Name, {'TeamsList','InstanceRegistry'})
-local InstanceRegistryTeamsInit = require(ModuleList.getModulePath('InstanceRegistryTeamsInit'))
-local TeamsFoldersInit = require(ModuleList.getModulePath('TeamsFoldersInit'))
-local TeamsListsInit = require(ModuleList.getModulePath('TeamsListsInit'))
+local InstanceRegistryTeamsInit = Router.getModulesAndInit(script.Name, 'InstanceRegistryTeamsInit')
+local TeamsFoldersInit = Router.getModulesAndInit(script.Name, 'TeamsFoldersInit')
+local TeamsListsInit = Router.getModulesAndInit(script.Name, 'TeamsListsInit')
 
 
 function TeamsInit.teamsInit(teamList)
