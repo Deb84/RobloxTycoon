@@ -1,6 +1,7 @@
 local SSS = game:GetService('ServerScriptService')
-local ModuleList = require(SSS.ModuleRouter.ModuleList)
-local InstanceRegistry = require(ModuleList.getModulePath('InstanceRegistry'))
+local MLM = require(SSS.ModuleRouter.ModuleListManager)
+local Router = require(MLM.getModulePath('ModuleRouter'))
+local InstanceRegistry = Router.getModule(script.Name, 'InstanceRegistry')
 local TeamsFoldersInit = {}
 
 function TeamsFoldersInit.TeamsFoldersInit(teamName)
