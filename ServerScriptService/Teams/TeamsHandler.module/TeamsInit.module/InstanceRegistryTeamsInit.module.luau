@@ -1,6 +1,6 @@
 local SSS = game:GetService('ServerScriptService')
-local ModuleList = require(SSS.ModuleRouter.ModuleList)
-local Router = require(ModuleList.getModulePath('ModuleRouter'))
+local MLM = require(SSS.ModuleRouter.ModuleListManager)
+local Router = require(MLM.getModulePath('ModuleRouter'))
 local InstanceRegistry = Router.getModule(script.Name, 'InstanceRegistry')
 
 local InstanceRegistryTeamsInit = {}

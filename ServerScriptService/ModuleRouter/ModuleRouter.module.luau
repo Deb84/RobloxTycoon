@@ -31,8 +31,7 @@ function moduleRouter.execute(caller, message)
 		return Executor.execute(caller, message)
 	end, ErrorHandler.warnHandler)
 	if success then
-		
-		print('sucess: '..message.module)
+		print('success: '..message.module)
 		return result
 	end
 end

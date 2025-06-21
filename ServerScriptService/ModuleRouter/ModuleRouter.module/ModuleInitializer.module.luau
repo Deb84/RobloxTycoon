@@ -1,5 +1,5 @@
-local ModuleRegistry = require(script.Parent:FindFirstChild('ModuleRegistry'))
-local ModuleMap = require(script.Parent.Parent:FindFirstChild('ModuleList'))
+local ModuleRegistry = require(script.Parent.ModuleRegistry)
+local MLM = require(script.Parent.Parent.ModuleListManager)
 
 local ModuleInitializer = {}
 
@@ -15,22 +15,20 @@ function ModuleInitializer.modulesInit(caller, moduleNames)
 		return true	
 	end
 
-	local function moduleRegister(moduleName)
-		local map = ModuleMap.map
-		local moduleList = map[moduleName]
-		local module = moduleList[moduleName]
-		ModuleRegistry.Register(script.Name, module.name, require(module))
+	local function moduleRegister(moduleName: string)
+		local modulePath = MLM.getModulePath(moduleName)
+		ModuleRegistry.Register(script.Name, modulePath.Name, require(modulePath))
 		return true
 	end
 
-	local function initEveryModules(modulesTypesList)
-		local moduleInitSatusTable = {}
-		for k, moduleList in pairs(modulesTypesList) do
-			local response = moduleListRegister(moduleList)
-			moduleInitSatusTable[k] = response
-		end
-		return moduleInitSatusTable
-	end
+	--local function initEveryModules(modulesTypesList)
+	--	local moduleInitSatusTable = {}
+	--	for k, moduleList in pairs(modulesTypesList) do
+	--		local response = moduleListRegister(moduleList)
+	--		moduleInitSatusTable[k] = response
+	--	end
+	--	return moduleInitSatusTable
+	--end
 
 	local function checkResponse(responses)
 		if responses then
@@ -47,13 +45,13 @@ function ModuleInitializer.modulesInit(caller, moduleNames)
 		else return false end
 	end
 
-	local modulesTypesList = {
-		lists = ModuleMap.modulesLists,
-		teamsLists = ModuleMap.teamsLists,
-		managers = ModuleMap.modulesManagers,
-		utils = ModuleMap.modulesUtils,
-		parts = ModuleMap.modulesParts,
-	}
+	--local modulesTypesList = {
+	--	lists = ModuleMap.modulesLists,
+	--	teamsLists = ModuleMap.teamsLists,
+	--	managers = ModuleMap.modulesManagers,
+	--	utils = ModuleMap.modulesUtils,
+	--	parts = ModuleMap.modulesParts,
+	--}
 
 
 	local modulesResponse
@@ -70,19 +68,22 @@ function ModuleInitializer.modulesInit(caller, moduleNames)
 		-- handle init of all modules
 	elseif not moduleNames then
 
-		modulesResponse = initEveryModules(modulesTypesList)
+		--modulesResponse = initEveryModules(modulesTypesList)
 
 		-- handle single and multiple init
 	elseif moduleNames then
+		
 		if type(moduleNames) == 'table' then
-			for _, moduleName in ipairs(moduleNames) do
+			for _, moduleName in pairs(moduleNames) do
 				local response = moduleRegister(moduleName)
+				
 				if not response then 
 					return false 
 				else 
 					modulesResponse = true
 				end
 			end
+			
 		elseif type(moduleNames) == 'string' then
 			modulesResponse = moduleRegister(moduleNames)
 		end

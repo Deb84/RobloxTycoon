@@ -1,6 +1,7 @@
 local ServerScriptService = game:GetService('ServerScriptService')
-local ModuleList = require(ServerScriptService.ModuleRouter.ModuleList)
-local InstanceRegistry = require(ModuleList.getModulePath('InstanceRegistry'))
+local MLM = require(ServerScriptService.ModuleRouter.ModuleListManager)
+local Router = require(MLM.getModulePath('ModuleRouter'))
+local InstanceRegistry = Router.getModule(script.Name, 'InstanceRegistry')
 
 local FolderInit = {}
 
