@@ -1,8 +1,8 @@
 local ServerScriptService = game:GetService('ServerScriptService')
-local Router = require(ServerScriptService.ModuleRouter.ModuleRouter)
-Router.modulesInit(script.Name, 'ModuleList')
-local teamsList, InstanceRegistry, modulesList = Router.getModules(script.Name, {'TeamsList', 'InstanceRegistry', 'ModuleList'})
-local TeamsInit = require(modulesList.getModulePath('TeamsInit'))
+local MLM = require(ServerScriptService.ModuleRouter.ModuleListManager)
+local Router = require(MLM.getModulePath('ModuleRouter'))
+local teamsList, InstanceRegistry = Router.getModules(script.Name, {'TeamsList', 'InstanceRegistry'})
+local TeamsInit = Router.getModulesAndInit(script.Name, 'TeamsInit')
 
 local TeamsHandler = {}
 
@@ -10,7 +10,7 @@ local TeamsHandler = {}
 -- TODO add team list and team verification
 
 function TeamsHandler.teamsInit(teamList)
-	
+	print(teamsList)
 	TeamsInit.teamsInit(teamList)
 	
 end
