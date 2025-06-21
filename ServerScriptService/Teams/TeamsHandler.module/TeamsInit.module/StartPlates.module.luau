@@ -1,13 +1,9 @@
 local SSS = game:GetService('ServerScriptService')
 local Players = game:GetService('Players')
-local ModuleList = require(SSS.ModuleRouter.ModuleList)
-local Router = require(ModuleList.getModulePath('ModuleRouter'))
+local MLM = require(SSS.ModuleRouter.ModuleListManager)
+local Router = require(MLM.getModulePath('ModuleRouter'))
 local StartPlatesList, PlacementUtils = Router.getModulesAndInit(script.Name, {'StartPlatesList', 'PlacementUtils'})
-
-local ErrorsMsg = require(SSS.Logs.Messages.Errors)
-local WarnsMsg = require(SSS.Logs.Messages.Warns)
-local ModuleErrorMsg = ErrorsMsg.ServerStart.StartPlates
-local ModuleWarnMsg = WarnsMsg.ServerStart.StartPlates
+local LogsMsg = require(SSS.Logs.LogsMessagesManager)
 
 
 local StartPlates = {}
@@ -17,24 +13,24 @@ function StartPlates.spawnStartPlate(baseplate, team)
 	local errorLoc = string.format('%s[spawnStartPlate]', script.Name)
 	
 	local function checkStartPlatesList()
-		assert(StartPlatesList, string.format(ModuleErrorMsg.NO_STARTPLATESLIST, errorLoc))
-		assert(type(StartPlatesList) == 'table', string.format(ModuleErrorMsg.STARTPLATESLIST_ISNT_TABLE, errorLoc))
+		assert(StartPlatesList, LogsMsg.get('Error', 'SP_NO_STARTPLATESLIST', errorLoc))
+		assert(type(StartPlatesList) == 'table', LogsMsg.get('Error', 'SP_STARTPLATESLIST_ISNT_TABLE', errorLoc))
 	end
 	
 	local function checkAndGetTeamStartPlate(teamName)
 		assert(StartPlatesList[teamName])
 		local teamStartPlate = StartPlatesList[teamName]
 		
-		assert(type(teamStartPlate) == 'table', string.format(ModuleErrorMsg.TEAMSTARTPLATE_ISNT_TABLE, errorLoc))
-		assert(next(teamStartPlate), string.format(ModuleErrorMsg.TEAMSTARTPLATE_EMPTY, errorLoc))
-		assert(teamStartPlate.model:IsA('Model'), string.format(ModuleErrorMsg.SP_MODEL, errorLoc))
-		assert(teamStartPlate.model.PrimaryPart:IsA('BasePart'), string.format(ModuleErrorMsg.SP_PRIMARY, errorLoc))
-		assert(typeof(teamStartPlate.color) == 'Color3', string.format(ModuleErrorMsg.SP_COLOR, errorLoc))
-		assert(type(teamStartPlate.transparency) == 'number', string.format(ModuleErrorMsg.SP_TRANSPARENCY, errorLoc))
-		assert(type(teamStartPlate.newTransparency) == 'number', string.format(ModuleErrorMsg.SP_TRANSPARENCY2, errorLoc))
-		assert(typeof(teamStartPlate.position) == 'CFrame', string.format(ModuleErrorMsg.SP_POSITION, errorLoc))
-		assert(type(teamStartPlate.spawned) == 'boolean', string.format(ModuleErrorMsg.SP_SPAWNED, errorLoc)) -- fallback possible
-		assert(type(teamStartPlate.rebounce) == 'boolean', string.format(ModuleErrorMsg.SP_REBOUNCE, errorLoc)) -- fallback possible
+		assert(type(teamStartPlate) == 'table', LogsMsg.get('Error', 'SP_TEAMSTARTPLATE_ISNT_TABLE', errorLoc))
+		assert(next(teamStartPlate), LogsMsg.get('Error', 'SP_TEAMSTARTPLATE_EMPTY', errorLoc))
+		assert(teamStartPlate.model:IsA('Model'), LogsMsg.get('Error', 'SP_MODEL', errorLoc))
+		assert(teamStartPlate.model.PrimaryPart:IsA('BasePart'), LogsMsg.get('Error', 'SP_PRIMARY', errorLoc))
+		assert(typeof(teamStartPlate.color) == 'Color3', LogsMsg.get('Error', 'SP_COLOR', errorLoc))
+		assert(type(teamStartPlate.transparency) == 'number', LogsMsg.get('Error', 'SP_TRANSPARENCY', errorLoc))
+		assert(type(teamStartPlate.newTransparency) == 'number', LogsMsg.get('Error', 'SP_TRANSPARENCY2', errorLoc))
+		assert(typeof(teamStartPlate.position) == 'CFrame', LogsMsg.get('Error', 'SP_POSITION', errorLoc))
+		assert(type(teamStartPlate.spawned) == 'boolean', LogsMsg.get('Error', 'SP_SPAWNED', errorLoc)) -- fallback possible
+		assert(type(teamStartPlate.rebounce) == 'boolean', LogsMsg.get('Error', 'SP_REBOUNCE', errorLoc)) -- fallback possible
 		
 		return teamStartPlate
 	end
