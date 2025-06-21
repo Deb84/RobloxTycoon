@@ -28,9 +28,9 @@ local CONFIG = {
 
 local moduleCache = {}
 
---local function traceback()
---	print(debug.traceback())
---end
+local function traceback()
+	print(debug.traceback())
+end
 
 local function init()
 	local function moduleInit() -- require the modules of CONFIG.MODULES
@@ -41,6 +41,7 @@ local function init()
 			local path = CONFIG.BASE_PATH:FindFirstChild(moduleName)
 			
 			if not path  then
+				traceback()
 				error(string.format(CONFIG.FALLBACK_ERRORS.INCORRECT_PATH, moduleName, script.Name)) -- raise an error if the module doesn't exist
 			end
 			
@@ -50,6 +51,7 @@ local function init()
 				if success then
 					moduleCache[normKey] = result -- if the pcall is successfull, add the module to the cache
 				else
+					traceback()
 					error(CONFIG.FALLBACK_ERRORS[normKey]) -- if the pcall fails, raise an error
 				end
 				
@@ -59,7 +61,7 @@ local function init()
 		end
 	end
 	
-	local function flattenMessagesTable(t: table, list: table) -- put the messages in a flat table
+	local function flattenMessagesTable(t: table, list: table?) -- put the messages in a flat table
 		list = list or {}
 		
 		for key, item in pairs(t) do
@@ -82,8 +84,8 @@ local function init()
 		end
 	end
 	
-	print(moduleCache) -- TODELETE
-	print(MessagesManager.msg) -- TODELETE
+	print(moduleCache) -- TODELETE --
+	print(MessagesManager.msg) -- TODELETE --
 	
 end
 
@@ -92,12 +94,14 @@ local function getMessage(level: string, code: string, stringFormatArgs: table |
 	
 	local function getMsg(level, code) -- get the message from the flat
 		if not MessagesManager.msg[level]  then
+			traceback()
 			error(string.format('Incorrect log level "%s" [error_location="%s"]', level, script.Name))
 		end
 		
 		local levelModule: table = MessagesManager.msg[level]
 		
 		if not levelModule[code] then
+			traceback()
 			error(string.format('Incorrect code "%s" [error_location="%s"]', code, script.Name))
 		end
 		
@@ -107,10 +111,10 @@ local function getMessage(level: string, code: string, stringFormatArgs: table |
 	end
 	
 	
-	local function formatMessage(msg: string, args) -- format the message with string format and args
+	local function formatMessage(msg: string, args: table | string | nil) -- format the message with string format and args
 		local msgBuild
 		
-		if args  then
+		if args then
 			if type(args) ~= 'table' then
 				args = {args}
 			end
@@ -119,7 +123,8 @@ local function getMessage(level: string, code: string, stringFormatArgs: table |
 			local _, countArgsRequired = string.gsub(msg, "%%s", "")
 			local countArgsGived = #args
 			if countArgsGived ~= countArgsRequired then
-				error(string.format('Incorrect number of arguments, expected : %i, receive : %i [error_location="%s"]', countArgsRequired, countArgsRequired, script.Name))
+				traceback()
+				error(string.format('Incorrect number of arguments, expected : %i, receive : %i [error_location="%s"]', countArgsRequired, countArgsGived, script.Name))
 			end
 			
 			
@@ -133,8 +138,10 @@ local function getMessage(level: string, code: string, stringFormatArgs: table |
 	
 	-- check if level & code exist
 	if not level then
+		traceback()
 		error(string.format('Level indexed to "nil" [error_location="%s"]', script.Name))
 	elseif not code then
+		traceback()
 		error(string.format('Code indexed to "nil" [error_location="%s"]', script.Name))
 	end
 	
@@ -149,8 +156,11 @@ local function getMessage(level: string, code: string, stringFormatArgs: table |
 end
 
 
+
+-- Declare public functions
+
 MessagesManager.init = init
-MessagesManager.getMessage = getMessage
+MessagesManager.get = getMessage
 
 
 return MessagesManager
