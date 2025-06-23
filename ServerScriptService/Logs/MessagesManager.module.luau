@@ -1,7 +1,6 @@
 -- Refactorisation :
 	-- centralize the error messages
 
-
 local SSS = game:GetService('ServerScriptService')
 
 local MessagesManager = {}
@@ -54,10 +53,7 @@ local function init()
 					traceback()
 					error(CONFIG.FALLBACK_ERRORS[normKey]) -- if the pcall fails, raise an error
 				end
-				
 			end
-			
-
 		end
 	end
 	
@@ -86,14 +82,13 @@ local function init()
 	
 	print(moduleCache) -- TODELETE --
 	print(MessagesManager.msg) -- TODELETE --
-	
 end
 
 
 local function getMessage(level: string, code: string, stringFormatArgs: table | string)
 	
 	local function getMsg(level, code) -- get the message from the flat
-		if not MessagesManager.msg[level]  then
+		if not MessagesManager.msg[level] then
 			traceback()
 			error(string.format('Incorrect log level "%s" [error_location="%s"]', level, script.Name))
 		end
