@@ -31,7 +31,7 @@ function moduleRouter.execute(caller, message)
 		return Executor.execute(caller, message)
 	end, ErrorHandler.warnHandler)
 	if success then
-		print('success: '..message.module)
+		--print('success: '..message.module)
 		return result
 	end
 end
@@ -69,7 +69,7 @@ function moduleRouter.getModules(caller, modulesNames)
 end
 
 function moduleRouter.getModulesAndInit(caller, moduleNames)
-	caller = {script.Name, caller}
+	caller = string.format(':"%s" -> "%s":', caller, script.Name)
 	
 	local success, result = xpcall(function()
 		if moduleRouter.modulesInit(caller, moduleNames) then
