@@ -1,23 +1,13 @@
 local ServerScriptService = game:GetService('ServerScriptService')
 local Registry = require(script.Parent:FindFirstChild('ModuleRegistry'))
 local Initializer = require(script.Parent:FindFirstChild('ModuleInitializer'))
-local LogsMsg = require(ServerScriptService.Logs.LogsMessagesManager)
---local ErrorMessages = require(ServerScriptService.Logs.Messages.Errors)
---local WarnMessages = require(ServerScriptService.Logs.Messages.Warns)
+local LogMsg = require(ServerScriptService.Logs.LogsMessagesManager)
+
 local ModuleExecutor = {}
 
---assert(ErrorMessages, string.format('Unable to load "Errors" [error_location=%s]', script.Name))
---assert(ErrorMessages.ModuleRouter.Executor, string.format('Unable to load Errors.ModuleRouter.Executor [error_location=%s]', script.Name))
---local moduleErrorsMsg = ErrorMessages.ModuleRouter.Executor
---local globalsErrorMsg = ErrorMessages.globals
 
---assert(WarnMessages, string.format(globalsErrorMsg.NO_WARNS, script.Name))
---assert(WarnMessages.ModuleRouter.Executor, string.format(moduleErrorsMsg.NO_WARNS, script.Name))
---local moduleWarnMsg = WarnMessages.ModuleRouter.Executor
-
---assert(Registry, string.format(moduleErrorsMsg.NO_REGISTRY, script.Name))
---assert(Initializer, string.format(moduleWarnMsg.NOT_INITIALIZER, script.Name))
---assert(Initializer.modulesInit, string.format(moduleWarnMsg.NOTINITIALIZER_MODULEINIT, script.Name))
+assert(Registry, LogMsg.get('error', 'EXE_NO_REGISTRY', script.Name))
+assert(Initializer, LogMsg.get('error','EXE_NOT_INITIALIZER', script.Name))
 
 
 
@@ -32,7 +22,7 @@ function ModuleExecutor.execute(caller: string, msg: {
 	init: boolean?
 	})
 	
-	local scriptCaller = string.format('%s[from=%s]', caller, script.Name) -- Set a new caller message for external script
+	local scriptCaller = string.format(':"%s" -> "%s":', caller, script.Name) -- Set a new caller message for external script
 	
 	-- msg is a table that contains the instructions
 	-- msg structure :
@@ -53,11 +43,11 @@ function ModuleExecutor.execute(caller: string, msg: {
 	local args = msg.args
 
 	local function checkMessage(msg, moduleName, funcName, args, caller) -- Check if the message is correct
-		assert(msg, LogsMsg.get('error', 'EXE_NO_MSG', {script.Name, caller})) -- check if the message exists
-		assert(type(msg) == 'table', LogsMsg.get('error', 'EXE_MSG_ISNT_TABLE', {script.Name, caller}))
-		assert(moduleName, LogsMsg.get('error', 'EXE_NO_MODULE_IN_MSG', {script.Name, caller}))
-		assert(funcName, LogsMsg.get('error', 'EXE_NO_FUNC_IN_MSG', {script.Name, caller}))
-		assert(not (msg.argsRes == true and args == nil), LogsMsg.get('error', 'EXE_ARGS_NIL', {moduleName, funcName, caller}))
+		assert(msg, LogMsg.get('error', 'EXE_NO_MSG', {script.Name, caller})) -- check if the message exists
+		assert(type(msg) == 'table', LogMsg.get('error', 'EXE_MSG_ISNT_TABLE', {script.Name, caller}))
+		assert(moduleName, LogMsg.get('error', 'EXE_NO_MODULE_IN_MSG', {script.Name, caller}))
+		assert(funcName, LogMsg.get('error', 'EXE_NO_FUNC_IN_MSG', {script.Name, caller}))
+		assert(not (msg.argsRes == true and args == nil), LogMsg.get('error', 'EXE_ARGS_NIL', {moduleName, funcName, caller}))
 		return true
 	end
 
@@ -65,14 +55,14 @@ function ModuleExecutor.execute(caller: string, msg: {
 	local function ensureModuleInit(moduleName, funcName, scriptCaller, caller)
 		if not Registry.isRegistered(scriptCaller, moduleName) then -- check if the module is registered
 			if msg.init == false then -- if msg.init false, doesn't init the module
-				error(LogsMsg.get('error', 'EXE_MODULE_NO_REGISTERED_INIT_FALSE', {moduleName, script.Name, moduleName, funcName, caller}))
+				error(LogMsg.get('error', 'EXE_MODULE_NO_REGISTERED_INIT_FALSE', {moduleName, script.Name, moduleName, funcName, caller}))
 			end
 		end
 
 		Initializer.modulesInit(scriptCaller, moduleName) -- Initialize the module if msg.init is true
 
 		if not Registry.isRegistered(scriptCaller, moduleName) then -- check a second time if the module is registered, if not raise an error
-			error(LogsMsg.get('error', 'EXE_MODULE_NO_INIT', {moduleName, script.Name, moduleName, funcName, caller}))
+			error(LogMsg.get('error', 'EXE_MODULE_NO_INIT', {moduleName, script.Name, moduleName, funcName, caller}))
 		end
 	end
 	
@@ -80,24 +70,24 @@ function ModuleExecutor.execute(caller: string, msg: {
 		if type(args) == 'string' then -- If args is a string, put it in a table
 			return {args} 
 		elseif type(args) ~= 'table' then -- Raise an error if args is not a table
-			error(LogsMsg.get('error', 'EXE_ARGS_NOT_TABLE', {script.Name, moduleName, funcName, caller}))
+			error(LogMsg.get('error', 'EXE_ARGS_NOT_TABLE', {script.Name, moduleName, funcName, caller}))
 		else
 			return args -- return args if there's nothing to do
 		end
 	end
 
 	local function getModule(moduleName, caller)
-		local module = Registry.modules[moduleName] -- get the module in the registry
+		local module = Registry.getModule(caller, moduleName) -- get the module in the registry
 		if module then
 			return module -- return the module
 		else
-			error(LogsMsg.get('error', 'EXE_NO_MODULE', {moduleName, script.Name, moduleName, funcName, caller}))
+			error(LogMsg.get('error', 'EXE_NO_MODULE', {moduleName, script.Name, moduleName, funcName, caller}))
 		end
 	end
 
 	local function checkFuncExistence(module, moduleName, funcName, caller) -- Check if the targeted function exists, if not raise an error
 		if not module[funcName] then
-			error(LogsMsg.get('error', 'EXE_FUNC_DOESNT_EXISTS', {funcName, script.Name, moduleName, funcName, caller}))
+			error(LogMsg.get('error', 'EXE_FUNC_DOESNT_EXISTS', {funcName, script.Name, moduleName, funcName, caller}))
 		end
 	end
 
@@ -130,7 +120,7 @@ function ModuleExecutor.execute(caller: string, msg: {
 		if success then
 			return result -- if the pcall is successful, return the result
 		else
-			error(LogsMsg.get('error', 'EXE_ERR_PCALL', {script.Name, moduleName, funcName, caller, result}))
+			error(LogMsg.get('error', 'EXE_ERR_PCALL', {script.Name, moduleName, funcName, caller, result}))
 		end
 	end
 
@@ -153,7 +143,7 @@ function ModuleExecutor.execute(caller: string, msg: {
 		end
 
 		if msg.result and not result then -- if result required and not result, raise an error
-			error(LogsMsg.get('error', 'EXE_NO_RESULT', {script.Name, moduleName, funcName, caller}))
+			error(LogMsg.get('error', 'EXE_NO_RESULT', {script.Name, moduleName, funcName, caller}))
 		end
 		
 		return result -- return the result
