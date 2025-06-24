@@ -5,11 +5,13 @@ local ModuleInitializer = {}
 
 
 function ModuleInitializer.modulesInit(caller, moduleNames)
+	caller = string.format(':"%s" -> "%s":', caller, script.Name)
+	
 	
 	local function moduleListRegister(modulesList)
 		for _, module in pairs(modulesList) do
-			if not ModuleRegistry.isRegistered(script.name, module) then
-				ModuleRegistry.Register(module.name, require(module))
+			if not ModuleRegistry.isRegistered(caller, module) then
+				ModuleRegistry.Register(caller, module.name, require(module))
 			end
 		end
 		return true	
@@ -17,7 +19,7 @@ function ModuleInitializer.modulesInit(caller, moduleNames)
 
 	local function moduleRegister(moduleName: string)
 		local modulePath = MLM.getModulePath(moduleName)
-		ModuleRegistry.Register(script.Name, modulePath.Name, require(modulePath))
+		ModuleRegistry.Register(caller, modulePath.Name, require(modulePath))
 		return true
 	end
 
