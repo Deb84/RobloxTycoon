@@ -1,11 +1,11 @@
-local Errors = {}
+local Error = {}
 
-Errors.globals = {
+Error.globals = {
 	-- FORMAT = '[error_location="%s" callee_module="%s" callee_function ="%s", caller_module="%s"]',
 	NO_WARNS = 'Unable to load "Warns" [error_location="%s"]',
 }
 
-Errors.ServerStart = {
+Error.ServerStart = {
 	
 	
 	FolderInit = {
@@ -32,16 +32,12 @@ Errors.ServerStart = {
 
 
 
-Errors.ModuleRouter = {
-	
-	
-	
-	
-	
-	
-	Executor = {
+Error.ModuleRouter = {
+		
+	ModuleExecutor = {
 		EXE_NO_WARNS = 'Unable to load Warns.ModuleRouter.Executor [error_location="%s"]',
 		EXE_NO_REGISTRY = 'Unable to load "moduleRegistry" [error_location="%s"]',
+		EXE_NOT_INITIALIZER = 'Unable to load "moduleInitializer" [error_location="%s"]',
 
 		EXE_NO_MSG = 'Message missing for "%s" from "%s"',
 		EXE_MSG_ISNT_TABLE = `Message isn't a table [error_location="%s" caller_module="%s"]`,
@@ -61,8 +57,20 @@ Errors.ModuleRouter = {
 		EXE_ERR_PCALL= 'An error ocurred from the Pcall [error_location="%s" callee_module="%s" callee_function ="%s", caller_module="%s"] \n %s', -- last %s = error
 
 		EXE_NO_RESULT = 'Result expected but indexed nil [error_location="%s" callee_module="%s" callee_function ="%s", caller_module="%s"]'
+	},
+	
+	ModuleRegistry = {
+		
+		MREG_NO_REGI_TG = '[MODULE REGISTRY] "targetName" indexed nil [caller_module="%s"]',
+		MREG_NO_REGI_MOD = '[MODULE REGISTRY] "module" indexed nil [caller_module="%s"]',
+		
+		MREG_TBL_NIL = '[MODULE REGISTRY] Module registry indexed nil [caller_module="%s"]',
+		
+		MREG_GET_NO_MOD_NAME = '[MODULE REGISTRY] %s indexed as nil [caller_module="%s"]',
+		
+		MREG_RMV_NO_MOD_NAME = '[MODULE REGISTRY] moduleName indexed as nil [caller_module="%s"]'
 	}
 }
 
 
-return Errors
+return Error
