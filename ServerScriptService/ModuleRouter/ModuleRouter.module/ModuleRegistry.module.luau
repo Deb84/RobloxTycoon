@@ -1,84 +1,105 @@
+SSS = game:GetService('ServerScriptService')
+LogMsg = require(SSS.Logs.LogsMessagesManager)
+
 local Registry = {}
 
-Registry.modules = {}
+
+local modulesCache = {}
 
 
-function Registry.Register(caller: string, targetName: string, module: module)
-	if not Registry.modules[targetName] then
-		Registry.modules[targetName] = module
-	end
-end
-
-function Registry.isRegistered(caller, module)
-	if Registry.modules[module] then
+local function isRegistered(caller: string, moduleName: string)
+	if modulesCache[moduleName] then
 		return true
+	end
+	return false
+end
+
+
+function Registry.Register(caller: string, moduleName: string, module: table)
+	if not moduleName then
+		error(LogMsg.get('error', 'MREG_NO_REGI_TG', caller))
+	elseif not module then
+		error(LogMsg.get('error', 'MREG_NO_REGI_MOD', caller))
+	end
+	
+	
+	if not isRegistered(caller, moduleName) then
+		modulesCache[moduleName] = module
 	else
-		return false
+		warn(LogMsg.get('warn', 'MREG_MOD_ALREADY_REGI', {moduleName, caller}))
 	end
 end
 
-function Registry.getModuleTable(caller)
-	return Registry.modules
+
+function Registry.getRegistry(caller: string)
+	if not next(modulesCache) then
+		warn(LogMsg.get('warn', 'MREG_MOD_TBL_EMPTY', caller))
+	end
+	return modulesCache
 end
 
 
 
-function Registry.getModule(caller, moduleName)
-	if Registry.modules[moduleName] then
-		return Registry.modules[moduleName]
-	else
-		warn(caller)
-		warn('Unable to get '..moduleName..' in the list')
+function Registry.getModule(caller: string, moduleName: string) -- existence verification to do in the caller script if an error is needed
+	if not moduleName then
+		error(LogMsg.get('error', 'MREG_GET_NO_MOD_NAME', {'moduleName', caller}))
+	end
+	
+	if not isRegistered(caller, moduleName) then
+		warn(LogMsg.get('warn', 'MREG_FAIL_GET', {moduleName, caller}))
 		return
 	end
+	return modulesCache[moduleName]
 end
 
-function Registry.getModules(caller, moduleNames)
+function Registry.getModules(caller: string, moduleNames: table | string)
+	if not moduleNames then
+		error(LogMsg.get('error', 'MREG_GET_NO_MOD_NAME', {'moduleNames', caller}))
+	end
+	
 	if type(moduleNames) ~= 'table' then
 		moduleNames = {moduleNames}
 	end
 	
 	local moduleList = {}
+	
 	for _, moduleName in pairs(moduleNames) do
-		if Registry.modules[moduleName] then
-			table.insert(moduleList, Registry.modules[moduleName])
+		if isRegistered(caller, moduleName) then
+			table.insert(moduleList, modulesCache[moduleName])
 		else
-			warn('Unable to find the module "'..moduleName..'" [modules:'..script.Name..'/function:getModules/caller:'..caller..']')
+			warn(LogMsg.get('warn', 'MREG_FAIL_GET', caller))
 		end
 	end
 
-	if moduleList then
-		return moduleList
+	if not next(moduleList) then
+		warn(LogMsg.get('warn', 'MREG_GET_ML_EMPTY', caller))
 	end
+	return moduleList
 end
 
 
-function Registry.addModule(caller, moduleName, module)
-	local function try(module)
-		local reqModule = require(module)
-		reqModule = nil
+function Registry.removeModule(caller: string, moduleName: string)
+	if not moduleName then
+		error(LogMsg.get('error', 'MREG_RMV_NO_MOD_NAME', caller))
 	end
+	
+	if not isRegistered(caller, moduleName) then
+		warn(LogMsg.get('warn', 'MREG_RMV_NO_MOD_REGI', caller))
+		return
+	end
+	
+	modulesCache[moduleName] = nil
+end
 
-	if not Registry.modules[moduleName]  then
-		local sucess, err = pcall(function()
-			try(module)
-		end)
-
-		if err then
-			return warn('Unable to add '..moduleName..' to the list')
-		end
-
-		Registry.modules[moduleName] = require(module)
+local function clearRegistry(caller: string)
+	if next(modulesCache) then
+		modulesCache = {}
+		warn(LogMsg.get('warn', 'MREG_REG_CLEAR', caller))
 	end
 end
 
-function Registry.removeModule(caller, moduleName)
-	if Registry.modules[moduleName] then
-		Registry.modules[moduleName] = nil
-	end
-end
-
-
+Registry.isRegistered = isRegistered
+Registry.clearRegistry = clearRegistry
 
 
 return Registry
