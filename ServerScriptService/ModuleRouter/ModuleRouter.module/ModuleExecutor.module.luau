@@ -22,7 +22,7 @@ function ModuleExecutor.execute(caller: string, msg: {
 	init: boolean?
 	})
 	
-	local scriptCaller = string.format(':"%s" -> "%s":', caller, script.Name) -- Set a new caller message for external script
+	local scriptCaller = string.format('> "%s" > "%s"', caller, script.Name) -- Set a new caller message for external script
 	
 	-- msg is a table that contains the instructions
 	-- msg structure :
