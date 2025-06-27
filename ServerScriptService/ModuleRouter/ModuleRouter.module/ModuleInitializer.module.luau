@@ -47,14 +47,6 @@ function ModuleInitializer.modulesInit(caller, moduleNames)
 		else return false end
 	end
 
-	--local modulesTypesList = {
-	--	lists = ModuleMap.modulesLists,
-	--	teamsLists = ModuleMap.teamsLists,
-	--	managers = ModuleMap.modulesManagers,
-	--	utils = ModuleMap.modulesUtils,
-	--	parts = ModuleMap.modulesParts,
-	--}
-
 
 	local modulesResponse
 
